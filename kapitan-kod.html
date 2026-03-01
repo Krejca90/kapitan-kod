@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kapitán Kód">
+<meta name="theme-color" content="#0a0e2e">
+<meta name="description" content="Digitální mentor pro malé dobrodruhy">
+<title>Kapitán Kód</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e2e;
+  --bg2: #111640;
+  --orange: #ff6b35;
+  --gold: #ffd700;
+  --blue: #4fc3f7;
+  --green: #69f0ae;
+  --red: #ff5252;
+  --purple: #ce93d8;
+  --text: #e8eaf6;
+  --card: rgba(255,255,255,0.07);
+  --card2: rgba(255,255,255,0.12);
+  --radius: 20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;flex-direction:column;position:relative}
+
+/* ===== STARS ===== */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle linear infinite}
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;z-index:1;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ===== TOPBAR ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,.5);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,.07)}
+.topbar-title{font-size:1rem;font-weight:900;color:var(--gold);letter-spacing:1px}
+.tab-btns{display:flex;gap:6px}
+.tab-btn{padding:7px 14px;border-radius:50px;border:2px solid var(--orange);background:transparent;color:var(--text);font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;cursor:pointer;transition:.2s}
+.tab-btn.active{background:var(--orange);color:#fff}
+
+/* ===== ONBOARDING ===== */
+#screen-onboarding{background:radial-gradient(ellipse at top,#1a1060 0%,#0a0e2e 70%);align-items:center;justify-content:center;gap:18px;padding:30px 24px}
+.onboard-title{font-size:2rem;font-weight:900;color:var(--gold);text-align:center;line-height:1.2;text-shadow:0 0 40px rgba(255,215,0,.4)}
+.onboard-sub{color:var(--blue);text-align:center;font-size:.95rem;font-weight:700;line-height:1.5}
+.onboard-form{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px}
+.field-input{background:rgba(255,255,255,.08);border:2px solid rgba(255,107,53,.5);border-radius:16px;padding:16px;color:#fff;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;outline:none;width:100%;transition:.2s}
+.field-input:focus{border-color:var(--orange);background:rgba(255,255,255,.12)}
+.field-input::placeholder{color:rgba(255,255,255,.35)}
+.btn-main{background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--radius);padding:18px;font-family:'Nunito',sans-serif;font-size:1.2rem;font-weight:900;cursor:pointer;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 24px rgba(255,107,53,.45);width:100%;letter-spacing:.5px}
+.btn-main:active{transform:scale(.97);box-shadow:0 2px 10px rgba(255,107,53,.3)}
+
+/* ===== ROBOT ===== */
+.robot-wrap{display:flex;justify-content:center;margin:8px 0;position:relative}
+.robot{position:relative;width:110px;height:150px;cursor:pointer;animation:float 3.5s ease-in-out infinite;flex-shrink:0}
+.robot.talking{animation:none}
+.robot.celebrate{animation:celebrate .45s ease-in-out infinite alternate}
+.r-head{width:76px;height:58px;background:linear-gradient(135deg,#1e2a80,#2a3898);border:2.5px solid var(--blue);border-radius:14px;position:absolute;left:17px;top:0;box-shadow:0 0 18px rgba(79,195,247,.25)}
+.r-antenna{width:7px;height:18px;background:linear-gradient(var(--orange),#ff8c42);position:absolute;left:35px;top:-18px;border-radius:4px}
+.r-antenna::after{content:'';width:13px;height:13px;background:var(--orange);border-radius:50%;position:absolute;left:-3px;top:-9px;box-shadow:0 0 12px var(--orange),0 0 24px rgba(255,107,53,.4);animation:antennaPulse 1.2s ease-in-out infinite}
+.r-eye{width:17px;height:17px;background:var(--blue);border-radius:50%;position:absolute;top:16px;box-shadow:0 0 10px var(--blue);transition:all .3s;animation:eyeBlink 4s infinite}
+.r-eye.left{left:13px}
+.r-eye.right{right:13px}
+.r-eye.talking{background:var(--gold);box-shadow:0 0 14px var(--gold);animation:eyeTalk .3s infinite alternate}
+.r-mouth{width:34px;height:7px;background:var(--green);border-radius:4px;position:absolute;bottom:11px;left:21px;transition:all .25s}
+.r-mouth.talking{height:15px;border-radius:8px;background:var(--gold);box-shadow:0 0 12px rgba(255,215,0,.5)}
+.r-body{width:86px;height:66px;background:linear-gradient(135deg,#151e60,#1e2a80);border:2.5px solid rgba(79,195,247,.6);border-radius:14px;position:absolute;left:12px;top:63px}
+.r-chest{width:28px;height:28px;background:radial-gradient(var(--orange),#c0392b);border-radius:50%;position:absolute;left:29px;top:19px;box-shadow:0 0 14px rgba(255,107,53,.6);animation:chestPulse 2s ease-in-out infinite}
+.r-chest::after{content:'';width:10px;height:10px;background:rgba(255,255,255,.6);border-radius:50%;position:absolute;left:4px;top:4px}
+.r-arm{width:16px;height:52px;background:linear-gradient(#1e2a80,#2a3898);border:2px solid rgba(79,195,247,.5);border-radius:10px;position:absolute;top:68px}
+.r-arm.left{left:2px;transform-origin:top center;animation:armSwingL 4s ease-in-out infinite}
+.r-arm.right{right:2px;transform-origin:top center;animation:armSwingR 4s ease-in-out infinite}
+.r-leg{width:20px;height:36px;background:linear-gradient(#1e2a80,#2a3898);border:2px solid rgba(79,195,247,.5);border-radius:8px;position:absolute;bottom:0}
+.r-leg.left{left:26px}
+.r-leg.right{right:26px}
+.r-leg::after{content:'';width:24px;height:10px;background:rgba(79,195,247,.3);border-radius:4px;position:absolute;bottom:-4px;left:-2px}
+.robot.talking .r-arm.left{animation:armTalkL .5s ease-in-out infinite alternate}
+.robot.talking .r-arm.right{animation:armTalkR .5s ease-in-out infinite alternate}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes celebrate{0%{transform:translateY(0) rotate(-6deg) scale(1.05)}100%{transform:translateY(-12px) rotate(6deg) scale(1.08)}}
+@keyframes eyeBlink{0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
+@keyframes eyeTalk{to{transform:scaleY(.7)}}
+@keyframes antennaPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.3);opacity:1}}
+@keyframes chestPulse{0%,100%{box-shadow:0 0 10px rgba(255,107,53,.5)}50%{box-shadow:0 0 22px rgba(255,107,53,.9)}}
+@keyframes armSwingL{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes armSwingR{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-8deg)}}
+@keyframes armTalkL{to{transform:rotate(-28deg)}}
+@keyframes armTalkR{to{transform:rotate(28deg)}}
+
+/* ===== HOME ===== */
+#screen-home{padding-bottom:80px}
+.home-inner{padding:0 16px 16px}
+.greeting{font-size:1.35rem;font-weight:900;color:var(--gold);text-align:center;margin:6px 0 2px}
+.greeting-sub{font-size:.85rem;font-weight:700;color:rgba(255,255,255,.5);text-align:center;margin-bottom:10px}
+
+.week-tracker{display:flex;justify-content:center;gap:8px;margin:8px 0 14px}
+.day-dot{width:42px;height:48px;border-radius:12px;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900;color:rgba(255,255,255,.35);flex-direction:column;gap:2px;transition:.3s}
+.day-dot.done{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,215,0,.1));border-color:var(--gold);color:var(--gold)}
+.day-dot.today{border-color:var(--orange);color:var(--orange)}
+.day-dot.today.done{border-color:var(--gold)}
+
+.section-label{font-size:.75rem;font-weight:900;color:var(--blue);text-transform:uppercase;letter-spacing:1.5px;margin:12px 0 8px;text-align:center;opacity:.8}
+.energy-btns{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+.energy-btn{width:52px;height:52px;border-radius:50%;border:2.5px solid rgba(79,195,247,.4);background:rgba(79,195,247,.08);color:var(--text);font-size:1.25rem;font-weight:900;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.energy-btn:active,.energy-btn.selected{background:var(--blue);color:#000;border-color:var(--blue);box-shadow:0 0 18px rgba(79,195,247,.5);transform:scale(1.12)}
+
+.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px}
+.topic-btn{background:var(--card);border:2px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 10px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text);font-family:'Nunito',sans-serif}
+.topic-btn:active,.topic-btn.selected{border-color:var(--orange);background:rgba(255,107,53,.15);transform:scale(.98)}
+.topic-emoji{font-size:1.9rem;line-height:1}
+.topic-name{font-size:.82rem;font-weight:900;letter-spacing:.5px}
+.topic-desc{font-size:.7rem;color:rgba(255,255,255,.45);font-weight:700}
+
+.start-btn{margin-top:14px;font-size:1.3rem;letter-spacing:1px}
+.start-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ===== LESSON ===== */
+#screen-lesson{padding-bottom:80px}
+.lesson-header{padding:10px 16px 12px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);position:sticky;top:0;z-index:5;border-bottom:1px solid rgba(255,255,255,.07)}
+.phase-label{font-size:.75rem;font-weight:900;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-bottom:4px}
+.phase-dots{display:flex;justify-content:center;gap:7px;margin:5px 0}
+.pdot{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.15);transition:.3s}
+.pdot.done{background:var(--green);box-shadow:0 0 8px rgba(105,240,174,.5)}
+.pdot.active{background:var(--orange);box-shadow:0 0 10px rgba(255,107,53,.7)}
+.progress-bar-wrap{background:rgba(255,255,255,.08);border-radius:10px;height:6px;overflow:hidden;margin:5px 0}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:10px;transition:width .6s ease}
+.phase-name{font-size:1rem;font-weight:900;color:var(--gold);text-align:center;margin-top:4px}
+
+.lesson-body{padding:14px 16px}
+.content-card{background:var(--card);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:20px;min-height:140px;font-size:1rem;font-weight:700;line-height:1.8;position:relative}
+.content-card.loading{display:flex;align-items:center;justify-content:center;min-height:160px}
+.spinner{width:38px;height:38px;border:4px solid rgba(255,255,255,.08);border-top-color:var(--blue);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.activity-item{display:flex;gap:10px;margin:6px 0;align-items:flex-start}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:7px}
+
+.lesson-btns{display:flex;gap:10px;margin-top:14px}
+.btn-continue{flex:1;background:linear-gradient(135deg,var(--green),#4caf50);color:#000;border:none;border-radius:var(--radius);padding:18px;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;cursor:pointer;transition:.12s;letter-spacing:.5px;box-shadow:0 4px 16px rgba(105,240,174,.3)}
+.btn-continue:active{transform:scale(.97)}
+.btn-continue:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-stop{background:rgba(255,82,82,.12);border:2px solid rgba(255,82,82,.4);color:var(--red);border-radius:var(--radius);padding:18px 20px;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:900;cursor:pointer;transition:.15s}
+.btn-stop:active{background:rgba(255,82,82,.2)}
+
+/* ===== RATING ===== */
+#screen-rating{padding:16px 16px 90px;gap:14px;align-items:center}
+.rating-title{font-size:1.6rem;font-weight:900;color:var(--gold);text-align:center;text-shadow:0 0 20px rgba(255,215,0,.4)}
+.rating-section{width:100%;max-width:420px}
+.rating-label{font-size:.75rem;font-weight:900;color:var(--blue);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;text-align:center}
+.chips-row{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.chip{padding:11px 16px;border-radius:50px;border:2px solid rgba(255,255,255,.15);background:var(--card);color:var(--text);font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:900;cursor:pointer;transition:.2s}
+.chip.sel{border-color:var(--orange);background:rgba(255,107,53,.2);color:var(--orange)}
+.mood-row{display:flex;justify-content:center;gap:10px}
+.mood-btn{width:52px;height:52px;border-radius:50%;border:2.5px solid rgba(255,255,255,.15);background:var(--card);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.mood-btn.sel{border-color:var(--gold);transform:scale(1.2);background:rgba(255,215,0,.15)}
+.btn-done{max-width:420px;background:linear-gradient(135deg,var(--gold),#f0a500);color:#000;font-size:1.25rem;letter-spacing:1px}
+
+/* ===== DASHBOARD ===== */
+#screen-dashboard{padding-bottom:80px}
+.dash-inner{padding:14px 16px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.stat-card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 8px;text-align:center}
+.stat-num{font-size:1.7rem;font-weight:900;color:var(--gold);line-height:1}
+.stat-lbl{font-size:.65rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.history-item{background:var(--card);border-radius:12px;padding:11px 14px;margin-bottom:7px;display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.06)}
+.history-date{font-size:.75rem;color:var(--blue);font-weight:700;min-width:75px}
+.history-info{flex:1;font-size:.82rem;font-weight:700;line-height:1.4}
+.history-mood{font-size:1.1rem}
+.dash-btn{background:var(--card);border:2px solid rgba(255,107,53,.4);color:var(--text);border-radius:var(--radius);padding:14px 18px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:900;cursor:pointer;width:100%;margin-bottom:10px;text-align:left;transition:.15s;display:flex;align-items:center;gap:10px}
+.dash-btn:active{background:rgba(255,107,53,.1)}
+.dash-btn-icon{font-size:1.2rem}
+.parent-note{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:14px;color:#fff;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;resize:vertical;min-height:80px;outline:none;margin-top:4px}
+.parent-note:focus{border-color:var(--orange)}
+.friday-reminder{background:rgba(255,215,0,.1);border:2px solid rgba(255,215,0,.4);border-radius:var(--radius);padding:12px 16px;text-align:center;font-weight:900;color:var(--gold);margin-bottom:10px;font-size:.9rem}
+.empty-state{text-align:center;padding:20px;color:rgba(255,255,255,.3);font-weight:700;font-size:.9rem}
+
+/* ===== MODALS ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s;padding:20px}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:linear-gradient(135deg,#1a1060,#0f0a40);border:2px solid rgba(255,107,53,.5);border-radius:24px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal h2{font-size:1.4rem;color:var(--gold);margin-bottom:12px}
+.modal p{font-size:.95rem;font-weight:700;line-height:1.7;color:var(--text);margin-bottom:14px}
+.breathing-circle{width:90px;height:90px;border-radius:50%;margin:0 auto 14px;animation:breathe 4s ease-in-out infinite}
+.breathing-in{background:radial-gradient(var(--blue),#1565c0)}
+.breathing-out{background:radial-gradient(var(--purple),#7b1fa2)}
+@keyframes breathe{0%,100%{transform:scale(.65);opacity:.5}50%{transform:scale(1.15);opacity:1}}
+.breathing-label{font-size:.9rem;font-weight:900;color:var(--blue);margin-bottom:12px}
+.modal-close{background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:var(--radius);padding:14px 32px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;margin-top:6px;box-shadow:0 4px 16px rgba(255,107,53,.4)}
+
+/* ===== BOTTOM BAR ===== */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(8,12,36,.95);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.08);padding:8px 14px;display:flex;gap:8px;z-index:20}
+.play-btn{background:linear-gradient(135deg,var(--orange),#ff8c42);color:#fff;border:none;border-radius:50px;padding:11px 20px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:900;cursor:pointer;flex:1;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(255,107,53,.35)}
+.stop-tts-btn{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.15);border-radius:50px;padding:11px 16px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:900;cursor:pointer}
+
+/* ===== CONFETTI ===== */
+.confetti-piece{position:fixed;animation:confettiFall linear forwards;pointer-events:none;z-index:200}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg) scale(1);opacity:1}100%{transform:translateY(105vh) rotate(900deg) scale(.5);opacity:0}}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(105,240,174,.15);border:1.5px solid var(--green);border-radius:50px;padding:10px 24px;font-weight:900;font-size:.9rem;color:var(--green);opacity:0;transition:.35s;z-index:150;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== MISC ===== */
+.badge{display:inline-block;background:rgba(255,107,53,.2);border:1px solid var(--orange);border-radius:50px;padding:3px 10px;font-size:.7rem;font-weight:900;color:var(--orange);margin-left:6px}
+.divider{height:1px;background:rgba(255,255,255,.07);margin:12px 0}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ONBOARDING -->
+<div class="screen" id="screen-onboarding">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:30px 24px">
+    <div class="robot-wrap">
+      <div class="robot" id="robot-onboard">
+        <div class="r-antenna"></div>
+        <div class="r-head"><div class="r-eye left"></div><div class="r-eye right"></div><div class="r-mouth"></div></div>
+        <div class="r-body"><div class="r-chest"></div></div>
+        <div class="r-arm left"></div><div class="r-arm right"></div>
+        <div class="r-leg left"></div><div class="r-leg right"></div>
+      </div>
+    </div>
+    <div class="onboard-title">Ahoj! Jsem<br>Kapitán Kód!</div>
+    <div class="onboard-sub">Budu tvojí pomocník na dobrodružných misích.<br>Jak se jmenuješ, hrdino?</div>
+    <div class="onboard-form">
+      <input class="field-input" type="text" id="childName" placeholder="Jméno dítěte (např. Šimon)" maxlength="30">
+      <input class="field-input" type="email" id="parentEmail" placeholder="Email rodiče (volitelné)">
+      <button class="btn-main" onclick="saveOnboarding()">SPUSTIT DOBRODRUŽSTVÍ!</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <div class="topbar-title">KAPITÁN KÓD</div>
+    <div class="tab-btns">
+      <button class="tab-btn active" id="tab-home" onclick="showTab('home')">MISE</button>
+      <button class="tab-btn" id="tab-dash" onclick="showTab('dashboard')">RODIČE</button>
+    </div>
+  </div>
+  <div class="home-inner">
+    <div class="robot-wrap">
+      <div class="robot" id="robot-home">
+        <div class="r-antenna"></div>
+        <div class="r-head"><div class="r-eye left"></div><div class="r-eye right"></div><div class="r-mouth"></div></div>
+        <div class="r-body"><div class="r-chest"></div></div>
+        <div class="r-arm left"></div><div class="r-arm right"></div>
+        <div class="r-leg left"></div><div class="r-leg right"></div>
+      </div>
+    </div>
+    <div class="greeting" id="homeGreeting">Ahoj, hrdino!</div>
+    <div class="greeting-sub" id="greetingSub">Co dnes prozkoumáme?</div>
+    <div class="week-tracker" id="weekTracker"></div>
+    <div class="section-label">JAK SE DNES CÍTÍŠ? (1 = unavený, 5 = nabitý)</div>
+    <div class="energy-btns" id="energyBtns"></div>
+    <div class="section-label">VYBER MISI</div>
+    <div class="topic-grid" id="topicGrid"></div>
+    <button class="btn-main start-btn" id="startBtn" onclick="startLesson()" disabled>SPUSTIT MISI!</button>
+  </div>
+</div>
+
+<!-- LESSON -->
+<div class="screen" id="screen-lesson">
+  <div class="lesson-header">
+    <div class="phase-label" id="phaseLabel">Fáze 1 z 4</div>
+    <div class="phase-dots" id="phaseDots"></div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div class="phase-name" id="phaseName">Pohybový start</div>
+  </div>
+  <div class="lesson-body">
+    <div class="robot-wrap">
+      <div class="robot" id="robot-lesson" style="width:90px;height:120px">
+        <div class="r-antenna" style="left:27px;top:-15px"></div>
+        <div class="r-head" style="width:62px;height:46px;left:14px"><div class="r-eye left" style="width:13px;height:13px;left:10px;top:12px"></div><div class="r-eye right" style="width:13px;height:13px;right:10px;top:12px"></div><div class="r-mouth" style="width:26px;left:18px;bottom:8px"></div></div>
+        <div class="r-body" style="width:70px;height:52px;left:10px;top:50px"><div class="r-chest" style="width:22px;height:22px;left:24px;top:14px"></div></div>
+        <div class="r-arm left" style="width:13px;height:40px;top:54px;left:1px"></div>
+        <div class="r-arm right" style="width:13px;height:40px;top:54px;right:1px"></div>
+        <div class="r-leg left" style="width:17px;height:28px;left:20px"></div>
+        <div class="r-leg right" style="width:17px;height:28px;right:20px"></div>
+      </div>
+    </div>
+    <div class="content-card" id="lessonContent"><div class="spinner"></div></div>
+    <div class="lesson-btns">
+      <button class="btn-continue" id="continueBtn" onclick="nextPhase()" disabled>▶ POKRAČOVAT</button>
+      <button class="btn-stop" onclick="openBreathing()">STOP</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATING -->
+<div class="screen" id="screen-rating">
+  <div class="rating-title">Mise splněna!</div>
+  <div class="robot-wrap">
+    <div class="robot celebrate" id="robot-rating">
+      <div class="r-antenna"></div>
+      <div class="r-head"><div class="r-eye left"></div><div class="r-eye right"></div><div class="r-mouth"></div></div>
+      <div class="r-body"><div class="r-chest"></div></div>
+      <div class="r-arm left"></div><div class="r-arm right"></div>
+      <div class="r-leg left"></div><div class="r-leg right"></div>
+    </div>
+  </div>
+  <div class="rating-section">
+    <div class="rating-label">Co bylo EASY?</div>
+    <div class="chips-row" id="easyChips"></div>
+  </div>
+  <div class="rating-section">
+    <div class="rating-label">Co bylo TĚŽKÉ?</div>
+    <div class="chips-row" id="hardChips"></div>
+  </div>
+  <div class="rating-section">
+    <div class="rating-label">Jaká je tvoje nálada?</div>
+    <div class="mood-row" id="moodBtns"></div>
+  </div>
+  <button class="btn-main btn-done" onclick="finishLesson()">HOTOVO! DALŠÍ MIS!</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <div class="topbar">
+    <div class="topbar-title">PRO RODIČE</div>
+    <div class="tab-btns">
+      <button class="tab-btn" id="dtab-home" onclick="showTab('home')">MISE</button>
+      <button class="tab-btn active" id="dtab-dash" onclick="showTab('dashboard')">RODIČE</button>
+    </div>
+  </div>
+  <div class="dash-inner">
+    <div id="fridayReminder"></div>
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="divider"></div>
+    <div class="section-label" style="text-align:left;margin-top:0">NEDÁVNÉ MISE</div>
+    <div id="historyList"></div>
+    <div class="divider"></div>
+    <button class="dash-btn" onclick="sendEmail()"><span class="dash-btn-icon">✉️</span>POSLAT TÝDENNÍ SHRNUTÍ E-MAILEM</button>
+    <button class="dash-btn" onclick="resetProgress()"><span class="dash-btn-icon">🔄</span>RESETOVAT STATISTIKY</button>
+    <div class="section-label" style="text-align:left">RODIČOVSKÁ POZNÁMKA PRO PŘÍŠTÍ LEKCI</div>
+    <textarea class="parent-note" id="parentNote" placeholder="Napiš poznámku – co procvičit, co dítě bavilo..."></textarea>
+    <button class="btn-main" style="margin-top:10px;font-size:1rem" onclick="saveNote()">ULOŽIT POZNÁMKU</button>
+  </div>
+</div>
+
+<!-- BREATHING MODAL -->
+<div class="modal-overlay" id="breathingModal">
+  <div class="modal">
+    <h2>Dýchej se mnou</h2>
+    <div class="breathing-circle breathing-in" id="breathCircle"></div>
+    <div class="breathing-label" id="breathLabel">Pomalu se nadechni...</div>
+    <p>Je v pořádku mít přestávku. Až budeš připravený, vrátíme se na misi. Jsi hrdina!</p>
+    <button class="modal-close" onclick="closeBreathing()">JSEM PŘIPRAVEN!</button>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar" id="bottomBar" style="display:none">
+  <button class="play-btn" id="playBtn" onclick="playCurrentScreen()">▶ PŘEČÍST NAHLAS</button>
+  <button class="stop-tts-btn" onclick="ttsStop()">■</button>
+</div>
+
+<script>
+// ================================================================
+// LESSON CONTENT LIBRARY – offline, bez API
+// 5 témat × 4 fáze × 3 varianty = 60 unikátních lekcí
+// ================================================================
+const LIBRARY = {
+
+  letters: {
+    phases: [
+      // Fáze 0: Pohybový start
+      [
+        `Ahoj ${'{name}'}! Dnes prozkoumáme svět písmen. Zahřejeme se pohybem!
+- Zvedni obě ruce nahoru a pak je spusť. To je písmeno I!
+- Roztáhni ruce do stran jako velké T. Skvěle!
+- Zkus udělat tělem kulatý tvar jako písmeno O.
+- Skácej 5x na místě a hlasitě křič svoje jméno!
+Výborně! Tělo i mozek jsou připraveny na misi.`,
+        `Vítej na misii Písmena, ${'{name}'}! Rozcvičíme tělo i hlasivky.
+- Řekni potichu písmeno A. Teď hlasitě!
+- Řekni potichu písmeno B. Teď úplně nahlas!
+- Ukaž jazyk a zkus říct: Bublina, balón, bota.
+- Dupej nohama, dokud neřekneš celé své jméno po slabikách!
+Perfektní zahřátí. Jdeme na to!`,
+        `Dnešní mise: PÍSMENA! Ale nejdřív se probudíme!
+- Natáhni ruce co nejvýš a řekni AAAAAA!
+- Udělej 3 dřepy a při každém řekni jedno písmeno: A, B, C.
+- Zabublej rty jako motorka – to jsou vibrace jako ve slovech!
+- Poskakuj 10 sekund jako šťastná žabka.
+Tělo nastartováno. Mozek připraven!`
+      ],
+      // Fáze 1: Hlavní quest
+      [
+        `Mise: Hledáme písmena kolem nás!
+- Podívej se na zeď, polici nebo knihu. Kolik písmen vidíš?
+- Najdi písmeno S – jako ve slově slunce nebo Šimon.
+- Zkus nakreslit do vzduchu písmeno A. Velké jako dům!
+- Řekni 3 věci, které začínají na M: máma, mléko, auto? Hmm, auto nezačíná na M...
+- Jak se jmenuješ? Jaké písmeno je na začátku tvého jména?
+Dobře pracuješ, hrdino!`,
+        `Dnes se naučíme o samohláskách – to jsou speciální písmena!
+- Samohlásky jsou: A, E, I, O, U. Zopakuj je po mně!
+- Zkus říct slovo AUTO. Kolik samohlásek slyšíš? Dvě: A a U!
+- Řekni slovo PES. Která samohláska je uprostřed? E!
+- Vymysli slovo, kde jsou dvě samohlásky. Třeba ELIO nebo OVOCE!
+- Samohlásky jsou jako zpívání – O, U, A, E, I!
+Jsi mistr samohlásek!`,
+        `Velká a malá písmena – jaký je rozdíl?
+- Velké A je na začátku věty nebo jména. Malé a je uprostřed slova.
+- Tvoje jméno začíná velkým písmenem! Je to speciální znak.
+- Zkus nakreslit prst ve vzduchu: velké B, pak malé b. Vidíš rozdíl?
+- Řekni větu: "Pes běží." Jaké písmeno je velké? P!
+- Proč myslíš, že některá písmena jsou velká?
+Skvělá práce! Rozumíš, jak písmena fungují.`
+      ],
+      // Fáze 2: Vědecká vsuvka
+      [
+        `Jak to funguje? Písmena a mozek!
+Věděl jsi, že mozek čte písmena jako tajné obrázky?
+- Každé písmeno má svůj vlastní tvar a zvuk.
+- Když vidíš A, mozek řekne: to je zvuk AH!
+- Písmena jsou vynálezy – lidé je vymysleli před tisíci lety.
+- Starověcí Egypťané psali obrázky místo písmen – jmenuje se to hieroglyfy!
+Ty používáš jeden z nejdůmyslnějších vynálezů na světě!`,
+        `Jak se rodí slova?
+Slova jsou jako legové kostičky – skládáš písmena za sebou!
+- Máš písmena P, E, S. Co vznikne? PES!
+- Přehoď je: S, E, P. To je SÉP – tak se říká chobotnici jinak!
+- Každé jazyk má jiná písmena. Čínština má obrázky, arabština se píše zprava doleva.
+- V češtině máme 42 písmen – víc než v angličtině!
+Písmena jsou superschopnost každého člověka.`,
+        `Proč umíme číst?
+Mozek má speciální místo pro čtení – říká se mu Brocova oblast!
+- Když se učíš nové písmeno, mozek vytváří nové spojení – jako novou cestu v lese.
+- Čím víc čteš, tím širší cesty v mozku máš.
+- Astronauti, doktoři, závodní řidiči – všichni museli nejdřív naučit písmena.
+- Ty teď stavíš svůj supermozek!
+Pokračuj v tréninku, hrdino!`
+      ],
+      // Fáze 3: Závěr + offline mise
+      [
+        `Skvělá mise, ${'{name}'}! Dnes jsi byl/a jako pravý průzkumník písmen.
+Offline mise pro rodinu:
+- Před spaním najděte spolu v knihovně nebo na poličce 5 různých písmen.
+- Řekni rodičům, co je samohláska a uveď příklad!
+- Nakresli si oblíbené písmeno a vylep ho na ledničku.
+Jsi hvězda! Zítra čeká nová mise.`,
+        `Mise splněna! Dnes jsi poznal/a tajemství písmen.
+Domácí úkol s rodinou:
+- Jděte spolu do kuchyně a hledejte písmena na obalech potravin.
+- Kdo najde nejvíc písmen A vyhraje!
+- Zkus napsat velké tiskací písmeno svého jména – třeba s pomocí maminky.
+Výborně! Kapitán Kód je na tebe hrdý.`,
+        `Dnešní mise: DOKONČENA! Byl/a jsi skvělý/á.
+Večerní výzva pro celou rodinu:
+- Zahrajte si hru: jeden říká písmeno, druhý vymyslí slovo.
+- Zkus usnout a přemýšlet, která písmena máš nejradši.
+- Ráno mi řekni (při příští misi), jaké písmeno se ti zdálo!
+Kapitán Kód říká: Odpočívej, mozek roste i ve spánku!`
+      ]
+    ]
+  },
+
+  numbers: {
+    phases: [
+      [
+        `Mise ČÍSLA startuje! Zahřejeme se počítáním tělem!
+- Dupej nohama 5x a při každém dupnutí řekni číslo: 1, 2, 3, 4, 5!
+- Udělej 3 dřepy a při každém řekni: JEDNA, DVĚ, TŘI!
+- Roztáhni prsty na ruce. Kolik jich je? Spočítej nahlas!
+- Poskakuj jednou za každý rok, kolik ti je let.
+Skvělý start! Čísla jsou všude kolem nás.`,
+        `Číselná mise začíná! Probudíme mozek pohybem!
+- Tleskni 2x, dupni 3x, tleskni znovu 2x – to je rytmus čísel!
+- Ukaž mi 4 prsty na jedné ruce. Teď přidej 1. Kolik je to?
+- Skákej jako klokan a při každém skoku řekni číslo od 1 výš!
+- Kolik nohou má pes? Ukáž mi na prstech!
+Výborně! Mozek je připraven na čísla.`,
+        `Dnes trénujeme čísla! Ale nejdřív cvičení!
+- Ukaž mi číslo 3 na prstech. Teď číslo 7!
+- Zvedni pravou ruku 4x. Levou ruku 2x.
+- Kolik máš uší? Kolik očí? Kolik nosů? Spočítej!
+- Poskakuj a počítej nahlas co nejdál dokážeš!
+Perfektní! Jsi ready na číselnou dobrodružnou misi.`
+      ],
+      [
+        `Dnes se naučíme sčítání – přidávání čísel!
+- Máš 2 jablka. Dostaneš 1 jablko. Kolik máš celkem?
+- Zkus to s prsty: ukaž 2 prsty, přidej 1 prst. Kolik jich je?
+- 1 + 1 = 2. Jeden pes a jeden pes jsou dva psi!
+- 3 + 2 = 5. Zkus si to ukázat na prstech!
+- Čísla je možné sčítat v libovolném pořadí. 2+3 je stejné jako 3+2!
+Výborně! Jsi malý matematický hrdina.`,
+        `Čísla mají pořadí – a to je důležité!
+- Čísla jdou za sebou: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+- Jaké číslo je před 5? Správně, 4!
+- Jaké číslo je za 7? Výborně, 8!
+- Zkus počítat pozpátku od 5: 5, 4, 3, 2, 1 – ODPÁLENÍ!
+- Sudá čísla jsou: 2, 4, 6, 8, 10. Říkají se párová!
+Skvělá práce! Čísla jsou tvoji kamarádi.`,
+        `Čísla v životě – kde je potkáváme?
+- Čísla jsou na hodinách – kolik je teď hodin?
+- Čísla jsou na dveřích bytů – jaké číslo máte doma?
+- V obchodě jsou čísla na cenách – kolik stojí tvoje oblíbená věc?
+- Čísla jsou ve fotbale – jaké číslo má tvůj oblíbený hráč?
+- Zkus spočítat, kolik kroků je od pohovky ke dveřím!
+Vidíš? Čísla jsou všude kolem tebe!`
+      ],
+      [
+        `Jak to funguje? Proč vůbec potřebujeme čísla?
+Před dávnými časy lidé neměli čísla a bylo to těžké!
+- Jak by farmář věděl, kolik má ovcí? Musel by je pojmenovat!
+- Číslice vymysleli Arabové a Indové – 0, 1, 2, 3... jsou jejich dar světu!
+- Nula je speciální číslo – znamená "nic", ale bez ní by 10 bylo jen 1!
+- Počítače pracují jen s 0 a 1 – to se jmenuje binární kód!
+Ty používáš vynález starý tisíce let. Skvělé, co?`,
+        `Mozek a čísla – jak to funguje?
+Mozek umí odhadnout malá čísla bez počítání!
+- Ukáži ti 3 tečky... mozek hned ví, že jsou 3. Bez počítání!
+- Ale 47 teček už musíš spočítat. Proč? Mozek má limit!
+- Mravenci nemají čísla, ale poznají, jestli je více nebo méně potravy.
+- Ty umíš víc než mravenci – umíš říct přesné číslo!
+Tvůj mozek je matematický superstroj.`,
+        `Čísla a příroda – Fibonacciho řada!
+V přírodě se skrývají tajná čísla!
+- Slunečnice má semínka ve spirálách: 8 jedním směrem, 13 druhým.
+- Mořská šnečka tvoří spirálu podle číselné řady.
+- Řada čísel: 1, 1, 2, 3, 5, 8, 13 – každé číslo je součet dvou předchozích!
+- Tato čísla se jmenují Fibonacciho řada – po matematikovi z Itálie.
+Příroda je plná matematiky!`
+      ],
+      [
+        `Mise splněna! Dnes jsi byl/a matematický/á hrdina.
+Offline mise s rodinou:
+- Před spaním spočítejte spolu hračky v pokoji.
+- Řekni rodičům, co je sčítání a ukaž na příkladu!
+- Zkus dát rodičům matematický příklad: kolik je 2 + 3?
+Kapitán Kód ti dává zlatou hvězdičku!`,
+        `Skvělá číselná mise, ${'{name}'}!
+Večerní výzva pro rodinu:
+- Při večeři spočítejte lžíce, vidličky a talíře na stole.
+- Zahrajte si: kdo rychleji řekne číslo o 1 víc?
+- Zkus usnout a spočítat ve snu ovečky od 10 dolů!
+Odpočívej, zítra nás čeká nová dobrodružná mise.`,
+        `Výborná práce dnes!
+Domácí úkol:
+- Najdi doma číslo 5 – na hodinách, na krabici, na knize.
+- Zkus rodičům říct číselnou řadu od 1 do 10.
+- Nakresli si oblíbené číslo – velké a barevné!
+Čísla jsou všude a ty je teď vidíš. Jsi superhrdina!`
+      ]
+    ]
+  },
+
+  robots: {
+    phases: [
+      [
+        `Mise ROBOTI startuje! Zahřejeme se jako roboti!
+- Pohybuj rukama tuhle jako robot: prr, prr, prr!
+- Udělej 5 kroků jako robot – rovně, pomalu, mechanicky.
+- Vydej zvuk robota: BZZZ... VRRR... TRRR!
+- Roztáhni ruce a otoč se pomalu dokola jako radar!
+Výborně! Jsi nejlepší robot na světě.`,
+        `Robotická mise! Probuď vnitřního robota!
+- Řekni robotickým hlasem: JSEM ROBOT, JMENUJI SE ${'{name'}+'.toUpperCase()}!
+- Pohybuj se jako robot přes celý pokoj a zpět.
+- Zablokuj tělo jako zmrzlý robot. Teď se znovu spusť!
+- Udělej robotický tanec: step vlevo, step vpravo, otoč se!
+Perfektní zahřátí! Mise začíná.`,
+        `Robotické cvičení! Všichni roboti musí být v kondici!
+- Zdvihej ruce střídavě jako robotické rameno továrny.
+- Jdi po špičkách jako precizní robot – každý krok přesně!
+- Zabzuč jako počítač: bzzz, bzzz, bzzz!
+- Poskakuj a při každém skoku řekni část slova RO-BOT!
+Spuštění dokončeno. Robot ${'{name}'} je připraven na misi!`
+      ],
+      [
+        `Co jsou roboti a co umí?
+Robot je stroj, který vykonává úkoly místo člověka!
+- Roboti v továrně vyrábí auta – svářejí a šroubují 24 hodin denně.
+- Roboti chirurgové pomáhají doktorům při operacích.
+- Roboti prozkoumávají Mars – tam, kde by člověk nepřežil!
+- Pes Aibo od Sony je robotický pes, který se učí triky.
+- Ty ovládáš mě, Kapitána Kóda – jsem také robot! No, skoro...
+Roboti jsou parťáci lidí!`,
+        `Jak se roboti naučí pohybovat?
+Roboti dostávají instrukce od počítačů – říká se tomu programování!
+- Programátor napíše příkazy: jdi rovně 3 kroky, otoč se vlevo.
+- Robot přesně vykoná každý příkaz – žádnou chybu si nedovolí!
+- Ty by ses chtěl/a naučit programovat? Je to jako skládání příkazů!
+- Zkus dát příkazy kamarádovi nebo rodiči: jdi 5 kroků, skoč 2x!
+- Pochopil jsi, co je programování? Je to super dovednost!
+Každý programátor začínal jako ty!`,
+        `Roboti a umělá inteligence – co to je?
+Moderní roboti se sami učí – říká se tomu umělá inteligence!
+- Umělá inteligence je program, který z příkladů pochopí pravidla.
+- Jako ty – ukážu ti 3 kočky a ty víš, jak vypadá kočka!
+- Roboti se učí chodit pádem – jako miminko!
+- Chat roboti jako já umíme mluvit, protože jsme četli miliardy slov.
+- Jednou budeš možná ty programovat roboty, kteří se učí!
+Jsi generace budoucnosti!`
+      ],
+      [
+        `Jak funguje robot uvnitř?
+Robot má tři hlavní části: mozek, smysly a svaly!
+- MOZEK robota je procesor – malý čip, který počítá miliardkrát za sekundu.
+- SMYSLY jsou kamery a mikrofony – robot vidí a slyší díky nim.
+- SVALY jsou motory – otáčejí koly, klouby a rameny.
+- Baterie je jako jídlo pro robota – bez ní se zastaví.
+Tvůj mozek je stokrát lepší než procesor!`,
+        `Proč roboti nevypadají jako lidé?
+Většina robotů nevypadá jako v pohádkách!
+- Tovární robot vypadá jako velká ruka – protože jen šroubuje.
+- Robotické auto vypadá jako auto – protože jen jezdí.
+- Tvar robota závisí na tom, co má dělat!
+- Lidský tvar se jmenuje humanoid – jsou vzácné a drahé.
+- Robot Boston Dynamics "Spot" vypadá jako pes a chodí podobně!
+Inženýři navrhují roboty pro jejich úkol, ne pro krásu.`,
+        `Roboti v budoucnosti – co čeká svět?
+Za 20 let bude svět plný chytrých robotů!
+- Roboti budou rozvážet balíky dronem přímo k vám domů.
+- Robotická ruka bude operovat mozek přesněji než lidská.
+- Farmy budou obdělávat autonomní traktory bez řidiče.
+- Možná budeš ty programovat tyto roboty!
+Svět budoucnosti potřebuje lidi jako ty – zvídavé a odvážné.`
+      ],
+      [
+        `Mise ROBOTI splněna! Skvělá práce, ${'{name}'}!
+Offline mise pro rodinu:
+- Nakresli svého vlastního robota – vymysli mu jméno a superschopnosti!
+- Řekni rodičům 3 věci, které roboti dělají místo lidí.
+- Zahrajte si: jeden hraje robota a druhý mu dává příkazy!
+Zítra nás čeká nová mise. Odpočívej, hrdino!`,
+        `Robotická mise: DOKONČENA! Byl/a jsi úžasný/á.
+Domácí výzva:
+- Postav doma robota z kartonových krabic – stačí namalovat oči a ústa!
+- Vymysli pro svého robota 3 příkazy, které umí splnit.
+- Řekni rodičům, co je procesor a k čemu slouží.
+Kapitán Kód je na tebe hrdý!`,
+        `Výborná robotická mise!
+Večerní úkol:
+- Zahrajte si doma "robot a programátor" – střídejte se v rolích.
+- Nakresli plán svého vysněného robota – co by uměl?
+- Najdi doma něco, co funguje automaticky (myčka, pračka) – to je taky robot!
+Roboti jsou parťáci a ty jsi jejich budoucí kamarád!`
+      ]
+    ]
+  },
+
+  nature: {
+    phases: [
+      [
+        `Mise PŘÍRODA! Probudíme se jako zvířátka!
+- Skoč 5x jako žabka a při každém řekni KVAK!
+- Běž na místě jako gepard – co nejrychleji 10 sekund!
+- Roztáhni ruce jako orla křídla a pomalu se otáčej.
+- Udělej zvuk svého oblíbeného zvířete – nahlas!
+Příroda je kolem nás a dnes ji budeme zkoumat!`,
+        `Přírodní mise startuje! Zahřátí se zvířecím pohybem!
+- Plaz se po čtyřech jako medvěd – pomalu a silně.
+- Poskakuj jako veverka a při každém skoku řekni název stromu!
+- Udělej zvuky tří různých ptáků – jak to podle tebe zpívají?
+- Stůj na jedné noze jako plameňák co nejdéle!
+Příroda je plná pohybu a energie. Jsi připraven/a!`,
+        `Přírodní dobrodružství! Rozcvičíme se jako příroda!
+- Roztáhni ruce a pomalu se houpej jako strom ve větru.
+- Dřep dolů jak semínko, pak pomalu vyrosteš v rostlinu!
+- Syčí jako had: ssssssss!
+- Zkus se pohybovat jako tvoje oblíbené zvíře 20 sekund!
+Výborně! Příroda tě volá na misi.`
+      ],
+      [
+        `Dnes se naučíme o zvířatech a jejich superschopnostech!
+- Netopýr vidí ve tmě pomocí odrazu zvuku – říká se tomu echolokace!
+- Chobotnice mění barvu v mžiku – ukrývá se před predátory.
+- Delfíni spí jen s půlkou mozku – druhá polovina zůstává bdělá!
+- Mravenci zvednou předmět 50x těžší, než jsou sami.
+- Kalamár může svítit v hloubce oceánu – bioluminiscence!
+Příroda je plná superhrdinů. Jaká superschopnost by se ti líbila?`,
+        `Zkoumáme ekosystémy – kde žijí zvířata?
+Každé zvíře má svůj domov, který se jmenuje biotop!
+- Les je domov pro jeleny, lišky, sovy a houby.
+- Oceán je domov pro velryby, žraloky a korály.
+- Poušť je domov pro velbloudy, škorpiony a kaktusy.
+- Arktida je domov pro tučňáky, ledními medvědy a tuleně.
+- Kde bys chtěl/a žít, kdybys byl/a zvíře?
+Každý biotop je unikátní a krásný!`,
+        `Jak rostliny a zvířata spolupracují?
+Příroda funguje jako velký tým – říká se tomu ekosystém!
+- Včely sbírají nektar a přenášejí pyl – tak vznikají plody a semena.
+- Bez včel by nebyly jablka, třešně ani meloun!
+- Stromy poskytují kyslík a my vydechujeme vzduch pro stromy.
+- Lišky jedí myši – bez lišek by bylo myší příliš mnoho!
+Každý tvor má svou roli. I ty jsi součástí přírody!`
+      ],
+      [
+        `Jak funguje fotosyntéza – jak rostliny jedí?
+Rostliny jsou jako továrny na jídlo – a to bez vidlicí!
+- Rostlina potřebuje tři věci: sluneční světlo, vodu a vzduch.
+- Ze slunce bere energii – jako nabíjení baterie!
+- Z vody a vzduchu vyrábí cukr – to je její potrava.
+- Jako vedlejší produkt vydechuje kyslík – náš vzduch!
+Každý strom je malá továrna na kyslík. Obdivuhodné!`,
+        `Proč mají zvířata barvy?
+Barvy v přírodě nejsou jen pro krásu – mají funkci!
+- Žába jedovatá je jasně červená: "Nesahej na mě!"
+- Zebra je pruhovaná: v tlupě jsou pruhy matoucí pro predátory.
+- Chameleon mění barvu podle nálady a teploty okolí.
+- Bílý medvěd polární se maskuje ve sněhu.
+- Motýl má na křídlech "oči" – straší predátory!
+Příroda je nejlepší designér na světě.`,
+        `Jak se mění příroda v průběhu roku?
+Čtyři roční období jsou jako čtyři kapitoly příběhu přírody!
+- JARO: stromy se probouzejí, ptáci staví hnízda, vylézají hmyz.
+- LÉTO: vše roste rychle, zvířata mají mláďata, plodí ovoce.
+- PODZIM: listí mění barvu, zvířata sbírají zásoby na zimu.
+- ZIMA: některá zvířata spí (hibernace), stromy odpočívají.
+Ježek spí celou zimu a na jaře se probudí jako nový!`
+      ],
+      [
+        `Přírodní mise splněna! Dnes jsi byl/a průzkumník přírody!
+Offline mise s rodinou:
+- Jděte spolu ven a najděte 5 různých věcí z přírody: list, kamínek, větvičku...
+- Nakresli své oblíbené zvíře a napiš (nebo řekni) 3 věci o něm.
+- Zahrajte si: každý řekne zvíře a jeho superschopnost!
+Příroda čeká na tvůj výzkum, hrdino!`,
+        `Skvělá přírodní mise, ${'{name}'}!
+Domácí výzva pro rodinu:
+- Podívejte se z okna a spočítejte různé druhy ptáků, co uvidíte.
+- Zalij spolu pokojovou rostlinu a vysvětli rodičům fotosyntézu!
+- Najdi doma jídlo, které pochází od zvířat – mléko, vejce, med...
+Příroda je všude kolem tebe!`,
+        `Výborná přírodní expedice!
+Večerní úkol:
+- Před spaním si sedněte k oknu a pozorujte 5 minut oblohu.
+- Řekni rodičům, co jsou to biotopy a jmenuj tři.
+- Zkus usnout a přemýšlet: kdybys byl/a zvíře, jaké bys byl/a a proč?
+Příroda tě učí každý den. Stačí se podívat!`
+      ]
+    ]
+  },
+
+  football: {
+    phases: [
+      [
+        `Mise FOTBAL startuje! Rozcvičíme se jako fotbalisté!
+- Kopni do vymyšleného míče co nejsilněji – GOL!
+- Udělej oslavu golu – ruce nahoru, otočky, výskoky!
+- Dribluj vymyšleným míčem okolo nábytku.
+- Udělej 10 kliků nebo dřepů – fotbalisté jsou silní!
+Výborně! Jsi připraven/a na fotbalovou misi!`,
+        `Fotbalová rozcvička! Každý hráč musí zahřát svaly!
+- Běhej na místě a pak udělej sprint ke zdi a zpět.
+- Simuluj hlavičku: skoč a dotkni se stropu (nebo co nejvýš)!
+- Udělej 5 přihrávek vymyšleným míčem kamarádovi nebo zdi.
+- Oslav jako Ronaldo: skoč, otoč se, ruce do stran!
+Tělo je připravené. Jdeme na fotbalovou misi!`,
+        `Fotbalové zahřátí! Hvězdy trénují každý den!
+- Stoj na jedné noze 10 sekund jako brankář čekající na penaltu.
+- Udělej slalom mezi vymyšlenými kužely.
+- Zkopni 3 penalty do vymyšlené brány – kolik dáš?
+- Povzbuzuj svůj tým: nahlas křič název svého oblíbeného klubu!
+Trenér Kapitán Kód říká: výborný tréning!`
+      ],
+      [
+        `Jak funguje fotbalový tým?
+Fotbal je týmový sport – sám nemůžeš vyhrát!
+- Tým má 11 hráčů v poli a 1 brankáře – celkem 12.
+- Každý hráč má svoji roli: útočník střílí góly, obránce brání.
+- Záložník propojuje útok a obranu – je jako mozek týmu.
+- Trenér říká, jak hrát – ale hráči musí rozhodovat sami na hřišti.
+- Bez spolupráce ani nejlepší hvězda neskóruje.
+Fotbal učí spolupráci – jako v životě!`,
+        `Pravidla fotbalu – co smím a co ne?
+Fotbal má jednoduchá, ale důležitá pravidla!
+- Hráč nesmí hrát rukama (kromě brankáře ve vlastní bráně).
+- Ofsajd: útočník nesmí být před posledním obráncem při přihrávce.
+- Žlutá karta = varování. Dvě žluté = červená = ven ze hřiště!
+- Penalty se kopou z 11 metrů, když hráč udělá faul v pokutovém území.
+- Zápas trvá 90 minut – dvakrát 45 minut s přestávkou.
+Teď víš pravidla jako rozhodčí!`,
+        `Největší fotbalisté historie!
+Fotbal má opravdové superhrdiny!
+- Pelé z Brazílie dal za kariéru více než 1000 gólů – legenda!
+- Ronaldo a Messi jsou největší rivalové dnešní éry.
+- Maradona dal "Gól století" – sám přešel celé hřiště!
+- Ženy hrají fotbal stejně skvěle – Marta je legenda ženského fotbalu.
+- Slavná čísla: 7 nosí Ronaldo, 10 byl Messi a Pelé.
+Kdo je tvůj oblíbený fotbalista?`
+      ],
+      [
+        `Jak funguje fotbalový míč?
+Míč je hlavní hvězda fotbalu – jak je vyrobený?
+- Fotbalový míč je nafouklý vzduch obalený kůží nebo plastem.
+- Vzduch uvnitř způsobuje, že se míč odráží a letí daleko.
+- Čím více nafouknutý, tím tvrdší a rychlejší míč.
+- Historicky se míče dělaly ze zvířecích měchýřů – dnes z plastu!
+- Adidas a Nike soutěží, kdo vyrobí nejlepší míč pro MS.
+Věda v každém kopnutí!`,
+        `Proč fotbalisté tak rychle běhají?
+Fyzika fotbalu – věda za sportem!
+- Špičkový hráč uběhne za zápas 10–13 km!
+- Rychlost střely může překročit 130 km/h – to je jako auto na dálnici!
+- Šlachovité nohy, silné srdce a plíce – to je vybavení fotbalisty.
+- Výživa je důležitá: hráči jedí sacharidy pro energii před zápasem.
+- Spánek je trénink – mozek si při spánku opakuje pohyby!
+Tvoje tělo se zlepšuje každý den, když cvičíš!`,
+        `Jak funguje VAR – technologie ve fotbalu?
+Moderní fotbal používá technologii!
+- VAR = Video Assistant Referee – pomocný videorozhodčí.
+- Při sporném gólu nebo červené kartě se pustí záběry z kamer.
+- Kamery jsou všude na stadionu – zachytí každý detail!
+- Gólová technologie: speciální čipy v míči a síti detekují gól.
+- Dron kamery létají nad hřištěm a snímají taktiku týmu.
+Fotbal 21. století kombinuje sport a technologie!`
+      ],
+      [
+        `Fotbalová mise splněna! Byl/a jsi skvělý/á hráč!
+Offline mise s rodinou:
+- Zahrajte si penalty doma – papírový míč a koš jako brána.
+- Řekni rodičům, kolik hráčů je ve fotbalovém týmu a jak se jmenují jejich role.
+- Nakresli svoji fotbalovou kartičku – jméno, číslo, klub!
+Kapitán Kód říká: jsi hvězda!`,
+        `Skvělá fotbalová mise, ${'{name}'}!
+Domácí výzva:
+- Sledujte spolu s rodiči kousek fotbalového zápasu a vysvětli jim pravidlo, které jsme se naučili.
+- Zkus s rodičem žonglovat papírovým míčem.
+- Jaký klub by sis vytvořil/a? Jak by se jmenoval a jaké by měl barvy?
+Fotbal je nejkrásnější hra světa!`,
+        `Výborný fotbalový trénink!
+Večerní výzva:
+- Zahrajte si doma "komentátor" – jeden hraje, druhý komentuje jako v televizi.
+- Řekni rodičům jméno svého oblíbeného hráče a co o něm víš.
+- Zkus usnout a promyslet: jak by vypadal tvůj vysněný gól?
+Zítra nás čeká nová mise. Odpočívej, šampióne!`
+      ]
+    ]
+  }
+};
+
+// Energie label
+const ENERGY_LABELS = ['Jsem unavený','Trochu ospalý','Tak nějak OK','Jsem nabití','PLNÁ ENERGIE!'];
+
+// Témata
+const TOPICS = [
+  {id:'letters', emoji:'🔤', name:'PÍSMENA', desc:'Abeceda a slova'},
+  {id:'numbers', emoji:'🔢', name:'ČÍSLA', desc:'Počítání a matematika'},
+  {id:'robots', emoji:'🤖', name:'ROBOTI', desc:'Stroje budoucnosti'},
+  {id:'nature', emoji:'🌿', name:'PŘÍRODA', desc:'Zvířata a rostliny'},
+  {id:'football', emoji:'⚽', name:'FOTBAL', desc:'Sport a týmová hra'}
+];
+
+// Fáze
+const PHASES = [
+  {title:'POHYBOVÝ START', icon:'🏃', mins:5},
+  {title:'HLAVNÍ QUEST', icon:'🎯', mins:12},
+  {title:'JAK TO FUNGUJE?', icon:'🔬', mins:6},
+  {title:'ZÁVĚR + MISE', icon:'🏆', mins:5}
+];
+
+// ================================================================
+// STATE
+// ================================================================
+let state = {
+  childName: '',
+  parentEmail: '',
+  energy: null,
+  topic: null,
+  currentPhase: 0,
+  lessonHistory: [],
+  weekDays: {},
+  parentNote: '',
+  currentScreen: 'onboarding',
+  variantIndex: 0
+};
+
+// ================================================================
+// INIT
+// ================================================================
+window.addEventListener('load', () => {
+  generateStars();
+  loadState();
+  initVoice();
+  buildHomeBtns();
+  buildPhaseDots();
+  buildRatingScreen();
+  determineStartScreen();
+});
+
+function generateStars() {
+  const c = document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random()*2.5+.5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*5+2}s;animation-delay:${Math.random()*5}s`;
+    c.appendChild(s);
+  }
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('kk2_state');
+    if(s) Object.assign(state, JSON.parse(s));
+  } catch(e){}
+}
+
+function persist() {
+  try { localStorage.setItem('kk2_state', JSON.stringify(state)); } catch(e){}
+}
+
+function determineStartScreen() {
+  if(!state.childName) { showScreen('onboarding'); return; }
+  updateGreeting();
+  renderWeekTracker();
+  renderDashboard();
+  showScreen('home');
+}
+
+// ================================================================
+// SCREENS
+// ================================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById('screen-'+name);
+  if(el) el.classList.add('active');
+  state.currentScreen = name;
+  const bb = document.getElementById('bottomBar');
+  bb.style.display = (name==='onboarding') ? 'none' : 'flex';
+}
+
+function showTab(tab) {
+  if(tab==='home') {
+    document.getElementById('tab-home')?.classList.add('active');
+    document.getElementById('tab-dash')?.classList.remove('active');
+    document.getElementById('dtab-home')?.classList.remove('active');
+    document.getElementById('dtab-dash')?.classList.remove('active');
+    updateGreeting();
+    renderWeekTracker();
+    showScreen('home');
+  } else {
+    document.getElementById('tab-home')?.classList.remove('active');
+    document.getElementById('tab-dash')?.classList.add('active');
+    document.getElementById('dtab-dash')?.classList.add('active');
+    renderDashboard();
+    showScreen('dashboard');
+  }
+}
+
+// ================================================================
+// ONBOARDING
+// ================================================================
+function saveOnboarding() {
+  const name = document.getElementById('childName').value.trim();
+  if(!name){ showToast('Zadej své jméno!'); return; }
+  state.childName = name;
+  state.parentEmail = document.getElementById('parentEmail').value.trim();
+  persist();
+  updateGreeting();
+  renderWeekTracker();
+  renderDashboard();
+  showScreen('home');
+  ttsPrepare(`Ahoj ${name}! Jsem Kapitan Kod, tvuj roboticky mentor. Vyber energii a misi a spustime dobrodruzstvi!`);
+  robotTalk('home');
+}
+
+// ================================================================
+// HOME
+// ================================================================
+function updateGreeting() {
+  const h = new Date().getHours();
+  const gr = h<12 ? 'Dobré ráno' : h<17 ? 'Ahoj' : 'Dobrý večer';
+  document.getElementById('homeGreeting').textContent = `${gr}, ${state.childName}!`;
+  document.getElementById('greetingSub').textContent = h<12 ? 'Nová mise čeká!' : h<17 ? 'Jsi připraven na dobrodružství?' : 'Jedna mise před spaním?';
+}
+
+function buildHomeBtns() {
+  // Energy
+  const eb = document.getElementById('energyBtns');
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.className='energy-btn'; b.textContent=i; b.title=ENERGY_LABELS[i-1];
+    b.onclick=function(){
+      document.querySelectorAll('.energy-btn').forEach(x=>x.classList.remove('selected'));
+      this.classList.add('selected');
+      state.energy=i;
+      const labels=['Rozumim, bereme to pomaleji.','Dobre! Pohodova mise.','Super! Jdeme na to.','Skvele! Bude to vyborne.','Wow, plna para! Jdeme na mega misi!'];
+      ttsSpeak(labels[i-1]);  // přímý onclick → user gesture ✓
+      robotTalk('home');
+      checkStart();
+    };
+    eb.appendChild(b);
+  }
+
+  // Topics
+  const tg = document.getElementById('topicGrid');
+  TOPICS.forEach(t=>{
+    const b = document.createElement('button');
+    b.className='topic-btn';
+    b.innerHTML=`<span class="topic-emoji">${t.emoji}</span><span class="topic-name">${t.name}</span><span class="topic-desc">${t.desc}</span>`;
+    b.onclick=function(){
+      document.querySelectorAll('.topic-btn').forEach(x=>x.classList.remove('selected'));
+      this.classList.add('selected');
+      state.topic=t.id;
+      ttsSpeak(`Vyborny vyber! Dnes prozkoumame tema ${t.name}. Stiskni tlacitko Spustit misi!`);  // přímý onclick ✓
+      robotTalk('home');
+      checkStart();
+    };
+    tg.appendChild(b);
+  });
+}
+
+function checkStart() {
+  document.getElementById('startBtn').disabled = !(state.energy && state.topic);
+}
+
+function renderWeekTracker() {
+  const el = document.getElementById('weekTracker');
+  if(!el) return;
+  el.innerHTML='';
+  const days=['Po','Út','St','Čt','Pá'];
+  const wk=getWeekKey();
+  const todayDow=new Date().getDay();
+  for(let i=0;i<5;i++){
+    const done=state.weekDays[wk]?.[i];
+    const isToday=todayDow===i+1;
+    const d=document.createElement('div');
+    d.className='day-dot'+(done?' done':'')+(isToday?' today':'');
+    d.innerHTML=done?`<span>⭐</span><span>${days[i]}</span>`:`<span>${days[i]}</span>`;
+    el.appendChild(d);
+  }
+}
+
+function getWeekKey(){
+  const d=new Date();
+  const start=new Date(d.getFullYear(),0,1);
+  const wk=Math.ceil(((d-start)/86400000+start.getDay()+1)/7);
+  return `${d.getFullYear()}-W${wk}`;
+}
+
+// ================================================================
+// LESSON
+// ================================================================
+function startLesson() {
+  state.currentPhase=0;
+  const topicHistory = state.lessonHistory.filter(h=>h.topic===state.topic);
+  state.variantIndex = topicHistory.length % 3;
+  showScreen('lesson');
+  loadPhase(0);
+  // NEvoláme ttsSpeak() – loadPhase připraví text, přečte se tlačítkem
+}
+
+function loadPhase(idx) {
+  const phase = PHASES[idx];
+  document.getElementById('phaseLabel').textContent = `Fáze ${idx+1} z ${PHASES.length}`;
+  document.getElementById('phaseName').textContent = `${phase.icon} ${phase.title}`;
+  updatePhaseDots(idx);
+  document.getElementById('progressBar').style.width=`${(idx/PHASES.length)*100}%`;
+
+  const box=document.getElementById('lessonContent');
+  box.className='content-card loading';
+  box.innerHTML='<div class="spinner"></div>';
+  document.getElementById('continueBtn').disabled=true;
+
+  setTimeout(()=>{
+    const raw = getContent(state.topic, idx, state.variantIndex);
+    const content = raw.replace(/\{name\}/g, state.childName);
+    box.className='content-card';
+    box.innerHTML = formatContent(content);
+    document.getElementById('continueBtn').disabled=false;
+    ttsPrepare(cleanText(content));  // uloží text, přečte se tlačítkem ▶
+    robotTalk('lesson');
+  }, 600);
+}
+
+function getContent(topic, phase, variant) {
+  const lib = LIBRARY[topic];
+  if(!lib) return 'Obsah se načítá...';
+  const variants = lib.phases[phase];
+  if(!variants) return 'Obsah se načítá...';
+  return variants[variant % variants.length];
+}
+
+function formatContent(text) {
+  const lines = text.split('\n').filter(l=>l.trim());
+  let html='';
+  lines.forEach((line,i)=>{
+    const l=line.trim();
+    if(i===0){
+      html+=`<p style="font-size:1.05rem;font-weight:900;color:var(--gold);margin-bottom:12px">${l}</p>`;
+    } else if(l.startsWith('-')){
+      html+=`<div class="activity-item"><div class="activity-dot"></div><span>${l.substring(1).trim()}</span></div>`;
+    } else {
+      html+=`<p style="margin:8px 0;color:rgba(255,255,255,.8)">${l}</p>`;
+    }
+  });
+  return html;
+}
+
+function buildPhaseDots() {
+  const el=document.getElementById('phaseDots');
+  el.innerHTML='';
+  PHASES.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='pdot'; d.id=`pdot-${i}`;
+    el.appendChild(d);
+  });
+}
+
+function updatePhaseDots(current) {
+  PHASES.forEach((_,i)=>{
+    const d=document.getElementById(`pdot-${i}`);
+    if(!d) return;
+    d.className='pdot'+(i<current?' done':i===current?' active':'');
+  });
+}
+
+function nextPhase() {
+  // 1. klik = precti text aktualni faze pokud jeste neni precteno
+  if (ttsPendingText && !(window.speechSynthesis && speechSynthesis.speaking)) {
+    ttsSpeak(ttsPendingText);  // primý onclick = user gesture OK
+    ttsPendingText = '';
+    const btn = document.getElementById('continueBtn');
+    if (btn) btn.textContent = '>> POKRACOVAT';
+    return;
+  }
+  // 2. klik = jit dal
+  ttsStop();
+  const btn = document.getElementById('continueBtn');
+  if (btn) btn.textContent = '>> POKRACOVAT';
+  state.currentPhase++;
+  if(state.currentPhase>=PHASES.length){
+    document.getElementById('progressBar').style.width='100%';
+    showScreen('rating');
+    ttsPrepare('Fantastická práce! Dokoncil jsi celou misi! Klikni na Precist nahlas.');
+    const rRating = document.getElementById('robot-rating');
+    if(rRating){ rRating.querySelectorAll('.r-eye').forEach(e=>e.classList.add('talking')); rRating.querySelector('.r-mouth')?.classList.add('talking'); }
+    playFanfare();
+    setTimeout(confetti, 300);
+    return;
+  }
+  loadPhase(state.currentPhase);
+}
+
+// ================================================================
+// RATING
+// ================================================================
+function buildRatingScreen() {
+  const easyItems=['Pohyb','Počítání','Čtení','Povídání','Vše bylo easy!'];
+  const hardItems=['Soustředění','Úkoly','Nic těžkého','Trochu těžké','Hodně těžké'];
+  const moods=['😊','🙂','😐','😕','😢'];
+
+  buildChips('easyChips', easyItems);
+  buildChips('hardChips', hardItems);
+
+  const moodEl=document.getElementById('moodBtns');
+  moods.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='mood-btn'; b.textContent=m;
+    b.onclick=()=>{ document.querySelectorAll('.mood-btn').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+    moodEl.appendChild(b);
+  });
+}
+
+function buildChips(containerId, items) {
+  const el=document.getElementById(containerId);
+  items.forEach(t=>{
+    const c=document.createElement('button');
+    c.className='chip'; c.textContent=t;
+    c.onclick=()=>{ el.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); };
+    el.appendChild(c);
+  });
+}
+
+function finishLesson() {
+  const topicObj=TOPICS.find(t=>t.id===state.topic);
+  const mood=document.querySelector('.mood-btn.sel')?.textContent||'😊';
+  const easy=document.querySelector('#easyChips .chip.sel')?.textContent||'-';
+  const hard=document.querySelector('#hardChips .chip.sel')?.textContent||'-';
+
+  const lesson={
+    date: new Date().toLocaleDateString('cs-CZ',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    timestamp: Date.now(),
+    topic: state.topic,
+    topicName: topicObj?.name||'',
+    energy: state.energy,
+    mood, easy, hard,
+    variant: state.variantIndex
+  };
+
+  state.lessonHistory=[lesson,...state.lessonHistory].slice(0,40);
+
+  const dow=new Date().getDay();
+  if(dow>=1&&dow<=5){
+    const wk=getWeekKey();
+    if(!state.weekDays[wk]) state.weekDays[wk]={};
+    state.weekDays[wk][dow-1]=true;
+  }
+
+  state.energy=null; state.topic=null;
+  document.querySelectorAll('.energy-btn,.topic-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('startBtn').disabled=true;
+  persist();
+
+  updateGreeting();
+  renderWeekTracker();
+  renderDashboard();
+  showScreen('home');
+  ttsPrepare(`Skvela prace! Dnes jsi ziskal hvezdicky za splnenou misi. Odpocin si a zajtra na nas ceka nove dobrodruzstvi!`);
+  robotTalk('home');
+  showToast('Hvězdička získána! ⭐');
+}
+
+// ================================================================
+// DASHBOARD
+// ================================================================
+function renderDashboard() {
+  const hist=state.lessonHistory;
+  const topicCounts={};
+  hist.forEach(h=>{ topicCounts[h.topicName]=(topicCounts[h.topicName]||0)+1; });
+  const fav=Object.entries(topicCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'–';
+
+  let streak=0;
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<30;i++){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    if(d.getDay()===0||d.getDay()===6) continue;
+    const found=hist.find(h=>{ const hd=new Date(h.timestamp); hd.setHours(0,0,0,0); return hd.getTime()===d.getTime(); });
+    if(found) streak++; else break;
+  }
+
+  const sg=document.getElementById('statGrid');
+  if(sg) sg.innerHTML=`
+    <div class="stat-card"><div class="stat-num">${hist.length}</div><div class="stat-lbl">Misí splněno</div></div>
+    <div class="stat-card"><div class="stat-num">${streak}</div><div class="stat-lbl">Série dní</div></div>
+    <div class="stat-card"><div class="stat-num" style="font-size:1rem;padding-top:6px">${fav}</div><div class="stat-lbl">Oblíbené téma</div></div>
+  `;
+
+  const hl=document.getElementById('historyList');
+  if(hl){
+    hl.innerHTML='';
+    if(hist.length===0){
+      hl.innerHTML='<div class="empty-state">Zatím žádné mise.<br>Spusť první dobrodružství!</div>';
+    } else {
+      hist.slice(0,10).forEach(h=>{
+        const d=document.createElement('div');
+        d.className='history-item';
+        d.innerHTML=`<div class="history-date">${h.date}</div><div class="history-info">${h.topicName}<br><span style="color:rgba(255,255,255,.45);font-size:.75rem">Energie: ${h.energy}/5 &bull; Easy: ${h.easy}</span></div><div class="history-mood">${h.mood}</div>`;
+        hl.appendChild(d);
+      });
+    }
+  }
+
+  const fr=document.getElementById('fridayReminder');
+  if(fr) fr.innerHTML=new Date().getDay()===5?'<div class="friday-reminder">PÁTEK – nezapomeň poslat týdenní e-mail rodičům!</div>':'';
+
+  const pn=document.getElementById('parentNote');
+  if(pn) pn.value=state.parentNote||'';
+}
+
+function saveNote() {
+  state.parentNote=document.getElementById('parentNote').value;
+  persist();
+  showToast('Poznámka uložena!');
+  ttsSpeak('Poznamka ulozena. Dekuju!');  // přímý onclick ✓
+}
+
+function sendEmail() {
+  const hist=state.lessonHistory.slice(0,7);
+  const lines=hist.map(h=>`${h.date}: ${h.topicName}, energie ${h.energy}/5, nálada ${h.mood}, easy: ${h.easy}`).join('\n');
+  const topicCounts={};
+  state.lessonHistory.forEach(h=>{ topicCounts[h.topicName]=(topicCounts[h.topicName]||0)+1; });
+  const fav=Object.entries(topicCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'–';
+  const body=`Ahoj!\n\nTýdenní zpráva od Kapitána Kóda pro ${state.childName}:\n\nCelkem splněných misí: ${state.lessonHistory.length}\nOblíbené téma: ${fav}\n\nPosledních 7 lekcí:\n${lines}\n\nPoznámka: ${state.parentNote||'žádná'}\n\nPokračujte v skvělé práci!\n\nKapitán Kód`;
+  const subj=`Týdenní zpráva Kapitán Kód – ${state.childName}`;
+  window.location.href=`mailto:${state.parentEmail||''}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+}
+
+function resetProgress() {
+  if(!confirm('Opravdu chceš smazat všechny statistiky? Jméno zůstane.')) return;
+  state.lessonHistory=[];
+  state.weekDays={};
+  persist();
+  renderDashboard();
+  renderWeekTracker();
+  showToast('Statistiky smazány');
+}
+
+// ================================================================
+// BREATHING MODAL
+// ================================================================
+let breathInterval=null;
+function openBreathing() {
+  ttsStop();
+  document.getElementById('breathingModal').classList.add('open');
+  let phase=0;
+  const labels=['Pomalu se nadechni...','Zadrž dech...','Pomalu vydechni...','Odpočiň si...'];
+  const classes=['breathing-in','breathing-out'];
+  const circle=document.getElementById('breathCircle');
+  const label=document.getElementById('breathLabel');
+  breathInterval=setInterval(()=>{
+    phase=(phase+1)%4;
+    label.textContent=labels[phase];
+    circle.className='breathing-circle '+(phase<2?'breathing-in':'breathing-out');
+  },2000);
+}
+function closeBreathing() {
+  document.getElementById('breathingModal').classList.remove('open');
+  if(breathInterval) clearInterval(breathInterval);
+  ttsSpeak('Vyborne! Jsi v pohode. Pokracujeme v misi!');  // přímý onclick ✓
+}
+
+// ================================================================
+// ROBOT ANIMATIONS
+// ================================================================
+function robotTalk(screen) {
+  const r=document.getElementById(`robot-${screen}`);
+  if(!r) return;
+  r.classList.add('talking');
+  r.querySelectorAll('.r-eye').forEach(e=>e.classList.add('talking'));
+  const mouth=r.querySelector('.r-mouth');
+  if(mouth) mouth.classList.add('talking');
+  setTimeout(()=>{
+    r.classList.remove('talking');
+    r.querySelectorAll('.r-eye').forEach(e=>e.classList.remove('talking'));
+    if(mouth) mouth.classList.remove('talking');
+  }, 3500);
+}
+
+// ================================================================
+// WEB AUDIO FANFARE
+// ================================================================
+function playFanfare() {
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [[523,.0],[659,.18],[784,.36],[1047,.54],[1319,.72]].forEach(([freq,delay])=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value=freq; osc.type='square';
+      const t=ctx.currentTime+delay;
+      gain.gain.setValueAtTime(.25,t);
+      gain.gain.exponentialRampToValueAtTime(.001,t+.4);
+      osc.start(t); osc.stop(t+.45);
+    });
+  } catch(e){}
+}
+
+// ================================================================
+// CONFETTI
+// ================================================================
+function confetti() {
+  const cols=['#ff6b35','#ffd700','#69f0ae','#4fc3f7','#ff5252','#ce93d8','#ffffff'];
+  for(let i=0;i<70;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.className='confetti-piece';
+      const sz=Math.random()*12+5;
+      const isRound=Math.random()>.5;
+      p.style.cssText=`left:${Math.random()*100}vw;top:-20px;width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${isRound?'50%':'3px'};animation-duration:${Math.random()*2+1.5}s;animation-delay:${Math.random()*.4}s`;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),4000);
+    },i*25);
+  }
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ================================================================
+// TTS – bezpečná verze s ochranou proti "not defined"
+// ================================================================
+let ttsVoice = null;
+let ttsKeepAlive = null;
+let ttsPendingText = '';
+
+const SS = () => window.speechSynthesis || null;  // bezpečný přístup
+
+function initVoice() {
+  const ss = SS();
+  if (!ss) return;
+  function find() {
+    const vs = ss.getVoices();
+    if (!vs.length) return;
+    ttsVoice =
+      vs.find(v => v.lang === 'cs-CZ') ||
+      vs.find(v => v.lang.startsWith('cs')) ||
+      vs.find(v => v.lang.startsWith('sk')) ||
+      vs.find(v => v.default) ||
+      vs[0] || null;
+  }
+  find();
+  ss.addEventListener('voiceschanged', find);
+  setTimeout(find, 500);
+  setTimeout(find, 1500);
+  setTimeout(find, 4000);
+}
+
+// Vyčistí text pro TTS (žádné HTML, žádné emoji, žádné {name})
+function cleanText(t) {
+  return t
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\{name\}/g, state.childName || '')
+    // ponech základní ASCII + česká písmena + pomlčka + mezera
+    .replace(/[^\u0020-\u007E\u00C0-\u017E\r\n]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Uloží text jako připravený – přečte se až tlačítkem (nebo přímo z onclick)
+function ttsPrepare(text) {
+  ttsPendingText = cleanText(text);
+  // Vizuální signál
+  const btn = document.getElementById('playBtn');
+  if (btn) {
+    btn.textContent = '▶ KLIKNI PRO POSLECH';
+    btn.style.background = 'linear-gradient(135deg,#ffd700,#f0a500)';
+    btn.style.color = '#000';
+  }
+}
+
+// Skutečné přečtení – MUSÍ být voláno přímo z onclick (user gesture)
+function ttsSpeak(text) {
+  const ss = SS();
+  if (!ss) return;
+  const clean = text ? cleanText(text) : ttsPendingText;
+  if (!clean) return;
+
+  try { ss.cancel(); } catch(e) {}
+  if (ttsKeepAlive) { clearInterval(ttsKeepAlive); ttsKeepAlive = null; }
+
+  const playBtn = document.getElementById('playBtn');
+  if (playBtn) {
+    playBtn.textContent = '▶ PŘEČÍST NAHLAS';
+    playBtn.style.background = '';
+    playBtn.style.color = '';
+  }
+  ttsPendingText = '';
+
+  const doSpeak = () => {
+    try {
+      const utt = new SpeechSynthesisUtterance(clean);
+      if (ttsVoice) utt.voice = ttsVoice;
+      utt.lang = 'cs-CZ';
+      utt.rate = 0.88;
+      utt.pitch = 1.1;
+      utt.volume = 1;
+
+      ttsKeepAlive = setInterval(() => {
+        const s = SS();
+        if (!s) { clearInterval(ttsKeepAlive); return; }
+        try {
+          if (s.speaking) { s.pause(); s.resume(); }
+          else { clearInterval(ttsKeepAlive); ttsKeepAlive = null; }
+        } catch(e) { clearInterval(ttsKeepAlive); }
+      }, 10000);
+
+      utt.onend = utt.onerror = () => {
+        if (ttsKeepAlive) { clearInterval(ttsKeepAlive); ttsKeepAlive = null; }
+      };
+
+      ss.speak(utt);
+    } catch(e) {
+      console.warn('TTS chyba:', e);
+    }
+  };
+
+  setTimeout(doSpeak, 120);
+}
+
+function ttsStop() {
+  const ss = SS();
+  try { if (ss) ss.cancel(); } catch(e) {}
+  if (ttsKeepAlive) { clearInterval(ttsKeepAlive); ttsKeepAlive = null; }
+  ttsPendingText = '';
+}
+
+// Tlačítko ▶ PŘEČÍST – jediné místo kde se smí speak() spustit "shora"
+function playCurrentScreen() {
+  let text = '';
+  switch (state.currentScreen) {
+    case 'home': {
+      const t = TOPICS.find(x => x.id === state.topic);
+      text =
+        document.getElementById('homeGreeting').textContent + '. ' +
+        document.getElementById('greetingSub').textContent + '. ' +
+        (state.energy ? `Zvolena energie ${state.energy}.` : 'Vyber energii od jedné do pěti.') + ' ' +
+        (t ? `Vybrána mise ${t.name}.` : 'Klikni na téma mise.');
+      break;
+    }
+    case 'lesson': {
+      const box = document.getElementById('lessonContent');
+      text = box ? box.innerText : '';
+      break;
+    }
+    case 'rating':
+      text = `Mise splnena! Skvela prace, ${state.childName}! Oznac, co bylo easy, co bylo tezke a jaka je tvoje nalada. Pak klikni na tlacitko Hotovo.`;
+      break;
+    case 'dashboard':
+      text = `Rodicovsky prehled pro ${state.childName}. Celkem misi: ${state.lessonHistory.length}.`;
+      break;
+    default:
+      text = `Vitej u Kapitana Koda! Zadej sve jmeno a spustme dobrodruzstvi.`;
+  }
+  if (text) ttsSpeak(text);  // přímo z onclick → user gesture → OK
+  const s = state.currentScreen;
+  if (s && s !== 'onboarding' && s !== 'rating' && s !== 'dashboard') robotTalk(s);
+}
+
+console.log('Kapitán Kód v2 (offline) loaded!');
+</script>
+</body>
+</html>
