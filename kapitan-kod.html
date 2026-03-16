@@ -1279,77 +1279,164 @@ function showToast(msg){
 }
 
 // ================================================================
-// TTS – věty se přehrávají postupně (fix pro Android/iOS)
+// TTS – Android Chrome proof verze
+// Android Chrome bug: speechSynthesis se zasekne po ~15s
+// Fix: každou větu spustíme jako nový Utterance s cancel+restart
 // ================================================================
-let ttsVoice=null;
-let ttsKeepAlive=null;
-let ttsPendingText='';
-let ttsQueue=[];
-let ttsQueuePlaying=false;
+let ttsVoice = null;
+let ttsPendingText = '';
+let ttsQueue = [];
+let ttsPlaying = false;
+let ttsWatchdog = null;
+let ttsLastPos = 0;
 
-const SS=()=>window.speechSynthesis||null;
+const SS = () => window.speechSynthesis || null;
 
-function initVoice(){
-  const ss=SS(); if(!ss) return;
-  function find(){
-    const vs=ss.getVoices(); if(!vs.length) return;
-    ttsVoice=vs.find(v=>v.lang==='cs-CZ')||vs.find(v=>v.lang.startsWith('cs'))||vs.find(v=>v.lang.startsWith('sk'))||vs.find(v=>v.default)||vs[0]||null;
+function initVoice() {
+  const ss = SS(); if (!ss) return;
+  function find() {
+    const vs = ss.getVoices(); if (!vs.length) return;
+    // Preferuj český hlas, fallback na slovenský, pak výchozí
+    ttsVoice =
+      vs.find(v => v.lang === 'cs-CZ') ||
+      vs.find(v => v.lang.startsWith('cs')) ||
+      vs.find(v => v.lang.startsWith('sk')) ||
+      vs.find(v => v.default) ||
+      vs[0] || null;
   }
-  find(); ss.addEventListener('voiceschanged',find);
-  [300,1000,3000,6000].forEach(t=>setTimeout(find,t));
+  find();
+  ss.addEventListener('voiceschanged', find);
+  [200, 500, 1000, 2000, 4000].forEach(t => setTimeout(find, t));
 }
 
-function cleanText(t){
-  return t.replace(/<[^>]+>/g,' ').replace(/\{name\}/g,state.childName||'').replace(/[^\u0020-\u007E\u00C0-\u017E\r\n]/g,'').replace(/\s+/g,' ').trim();
+function cleanText(t) {
+  return t
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\{name\}/g, state.childName || '')
+    .replace(/[^\u0020-\u007E\u00C0-\u017E\r\n]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
-// Rozdělí text na věty pro spolehlivé přehrávání
-function splitSentences(text){
-  return text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>2);
+// Rozdělí text na krátké kousky (max ~80 znaků) – klíč pro Android
+function splitChunks(text) {
+  // Nejdřív rozděl na věty
+  const sentences = text
+    .replace(/\n/g, '. ')
+    .split(/(?<=[.!?:])\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 1);
+
+  // Pak každou větu rozděl pokud je moc dlouhá (Android limit ~100 znaků)
+  const chunks = [];
+  sentences.forEach(s => {
+    if (s.length <= 90) {
+      chunks.push(s);
+    } else {
+      // Rozděl na polovičce u čárky nebo mezery
+      const parts = s.match(/.{1,85}(?:,\s|\s|$)/g) || [s];
+      parts.forEach(p => { if (p.trim()) chunks.push(p.trim()); });
+    }
+  });
+  return chunks.filter(c => c.length > 1);
 }
 
-function ttsPrepare(text){
-  ttsPendingText=cleanText(text);
-  const btn=document.getElementById('playBtn');
-  if(btn){ btn.textContent='▶ KLIKNI PRO POSLECH'; btn.className='play-btn has-text'; }
+function ttsPrepare(text) {
+  ttsPendingText = cleanText(text);
+  const btn = document.getElementById('playBtn');
+  if (btn) { btn.textContent = '▶ KLIKNI PRO POSLECH'; btn.className = 'play-btn has-text'; }
 }
 
-// Hlavní funkce – přehrání fronty vět (musí být voláno z user gesture)
-function ttsSpeak(text){
-  const ss=SS(); if(!ss) return;
-  const clean=text?cleanText(text):ttsPendingText;
-  if(!clean) return;
-  try{ss.cancel();}catch(e){}
-  if(ttsKeepAlive){clearInterval(ttsKeepAlive);ttsKeepAlive=null;}
-  ttsPendingText='';
-  const btn=document.getElementById('playBtn');
-  if(btn){btn.textContent='▶ PŘEČÍST NAHLAS';btn.className='play-btn';}
-  ttsQueue=splitSentences(clean);
-  ttsQueuePlaying=true;
-  setTimeout(()=>playNextInQueue(),100);
+// MUSÍ být voláno přímo z onclick (user gesture) – jinak Android blokuje
+function ttsSpeak(text) {
+  const ss = SS(); if (!ss) return;
+  const clean = text ? cleanText(text) : ttsPendingText;
+  if (!clean) return;
+
+  // Reset
+  ttsStop(true); // true = tiché zastavení bez UI reset
+  ttsPendingText = '';
+  const btn = document.getElementById('playBtn');
+  if (btn) { btn.textContent = '■ ČTENÍ...'; btn.className = 'play-btn'; }
+
+  ttsQueue = splitChunks(clean);
+  ttsPlaying = true;
+  ttsLastPos = Date.now();
+
+  // Spusť první chunk s malým zpožděním (Android potřebuje čas po cancel)
+  setTimeout(() => _playChunk(), 150);
 }
 
-function playNextInQueue(){
-  const ss=SS(); if(!ss||!ttsQueuePlaying||ttsQueue.length===0){ ttsQueuePlaying=false; if(ttsKeepAlive){clearInterval(ttsKeepAlive);ttsKeepAlive=null;} return; }
-  const sentence=ttsQueue.shift();
-  try{
-    const utt=new SpeechSynthesisUtterance(sentence);
-    if(ttsVoice) utt.voice=ttsVoice;
-    utt.lang='cs-CZ'; utt.rate=0.9; utt.pitch=1.1; utt.volume=1;
-    utt.onend=()=>{ setTimeout(()=>playNextInQueue(),80); };
-    utt.onerror=()=>{ setTimeout(()=>playNextInQueue(),80); };
-    // Android keepalive
-    ttsKeepAlive=setInterval(()=>{ const s=SS(); if(!s) return; try{ if(s.speaking){s.pause();s.resume();} }catch(e){} },8000);
+function _playChunk() {
+  const ss = SS();
+  if (!ss || !ttsPlaying || ttsQueue.length === 0) {
+    _ttsFinished();
+    return;
+  }
+
+  const chunk = ttsQueue.shift();
+  ttsLastPos = Date.now();
+
+  try {
+    // Android fix: vždy cancel před novým speak
+    try { ss.cancel(); } catch(e) {}
+
+    const utt = new SpeechSynthesisUtterance(chunk);
+    if (ttsVoice) utt.voice = ttsVoice;
+    utt.lang = 'cs-CZ';
+    utt.rate = 0.88;
+    utt.pitch = 1.05;
+    utt.volume = 1.0;
+
+    utt.onend = () => {
+      if (!ttsPlaying) return;
+      // Krátká pauza mezi větami
+      setTimeout(() => _playChunk(), 120);
+    };
+
+    utt.onerror = (e) => {
+      // Při chybě zkus přeskočit na další chunk
+      if (!ttsPlaying) return;
+      setTimeout(() => _playChunk(), 200);
+    };
+
+    // Watchdog: Android Chrome někdy ani nespustí onend
+    // Pokud se nic neděje 12s, posuneme se dál
+    if (ttsWatchdog) clearTimeout(ttsWatchdog);
+    const expectedMs = Math.max(3000, chunk.length * 80); // ~80ms na znak
+    ttsWatchdog = setTimeout(() => {
+      if (!ttsPlaying) return;
+      const elapsed = Date.now() - ttsLastPos;
+      if (elapsed > expectedMs - 500) {
+        _playChunk(); // watchdog kick
+      }
+    }, expectedMs + 2000);
+
     ss.speak(utt);
-  }catch(e){ setTimeout(()=>playNextInQueue(),100); }
+
+  } catch(e) {
+    setTimeout(() => _playChunk(), 300);
+  }
 }
 
-function ttsStop(){
-  const ss=SS(); try{if(ss) ss.cancel();}catch(e){}
-  if(ttsKeepAlive){clearInterval(ttsKeepAlive);ttsKeepAlive=null;}
-  ttsQueue=[]; ttsQueuePlaying=false; ttsPendingText='';
-  const btn=document.getElementById('playBtn');
-  if(btn){btn.textContent='▶ PŘEČÍST NAHLAS';btn.className='play-btn';}
+function _ttsFinished() {
+  ttsPlaying = false;
+  if (ttsWatchdog) { clearTimeout(ttsWatchdog); ttsWatchdog = null; }
+  const btn = document.getElementById('playBtn');
+  if (btn) { btn.textContent = '▶ PŘEČÍST NAHLAS'; btn.className = 'play-btn'; }
+}
+
+function ttsStop(silent) {
+  const ss = SS();
+  ttsPlaying = false;
+  ttsQueue = [];
+  if (ttsWatchdog) { clearTimeout(ttsWatchdog); ttsWatchdog = null; }
+  try { if (ss) ss.cancel(); } catch(e) {}
+  if (!silent) {
+    ttsPendingText = '';
+    const btn = document.getElementById('playBtn');
+    if (btn) { btn.textContent = '▶ PŘEČÍST NAHLAS'; btn.className = 'play-btn'; }
+  }
 }
 
 function playCurrentScreen(){
