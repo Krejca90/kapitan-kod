@@ -207,7 +207,9 @@ body{display:flex;flex-direction:column;position:relative}
 /* SPOJ */
 .match-container{display:flex;gap:12px;margin-bottom:12px}
 .match-col{flex:1;display:flex;flex-direction:column;gap:7px}
-.match-item{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;font-weight:900;font-size:.9rem;transition:.2s;min-height:52px;display:flex;align-items:center;justify-content:center}
+.match-item{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:10px 6px;text-align:center;cursor:pointer;font-weight:900;font-size:.9rem;transition:.2s;min-height:76px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px}
+.match-item .me{font-size:2rem;line-height:1.15;display:block}
+.match-item .ml{font-size:.7rem;opacity:.9;display:block;font-weight:700;line-height:1.3}
 .match-item.left.selected{border-color:var(--orange);background:rgba(255,107,53,.15);color:var(--orange)}
 .match-item.right.selected{border-color:var(--blue);background:rgba(79,195,247,.12);color:var(--blue)}
 .match-item.matched-ok{border-color:var(--green);background:rgba(105,240,174,.12);color:var(--green);pointer-events:none}
@@ -469,7 +471,7 @@ const LIBRARY = {
       // FÁZE 1 – Hlavní quest
       [
         { text: `Mise: Hledáme písmena kolem nás!\n- Podívej se na zeď nebo polici. Kolik písmen vidíš?\n- Najdi písmeno A v okolí – je na knize, krabici nebo plakátu?\n- Nakresli do vzduchu písmeno A. Velké jako dům!\n- Řekni 3 slova začínající na M: máma, mléko, mráz...\n- Jak se jmenuješ? Jaké písmeno je úplně první?\n- Písměna jsou stavební kameny každého slova!`, gameType: 'sort', gameData: { instruction: 'Seřaď písmena podle abecedy', items: ['E', 'A', 'D', 'B', 'C'], correct: ['A', 'B', 'C', 'D', 'E'], exp: 'Skvěle! Abeceda jde: A, B, C, D, E...' } },
-        { text: `Dnes se naučíme o samohláskách!\n- Samohlásky jsou: A, E, I, O, U. Zopakuj je!\n- Řekni slovo AUTO. Kolik samohlásek slyšíš? Dvě: A a U!\n- Zkus slovo PES. Která samohláska je uprostřed? E!\n- Samohlásky jsou jako zpívání: O, U, A, E, I!\n- Ve slově MÁMA jsou dvě samohlásky. Které?\n- Bez samohlásek by se slova nedala vyslovit!`, gameType: 'match', gameData: { left: ['A', 'O', 'U', 'E'], right: ['jablko', 'okno', 'ucho', 'eso'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Každá samohláska stojí na začátku jiného slova.' } },
+        { text: `Dnes se naučíme o samohláskách!\n- Samohlásky jsou: A, E, I, O, U. Zopakuj je!\n- Řekni slovo AUTO. Kolik samohlásek slyšíš? Dvě: A a U!\n- Zkus slovo PES. Která samohláska je uprostřed? E!\n- Samohlásky jsou jako zpívání: O, U, A, E, I!\n- Ve slově MÁMA jsou dvě samohlásky. Které?\n- Bez samohlásek by se slova nedala vyslovit!`, gameType: 'match', gameData: { left: [{e:'🔴',t:'A'},{e:'⭕',t:'O'},{e:'🔵',t:'U'},{e:'✏️',t:'E'}], right: [{e:'🍏',t:'jablko'},{e:'🪟',t:'okno'},{e:'👂',t:'ucho'},{e:'🃏',t:'eso'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Každá samohláska stojí na začátku jiného slova.' } },
         { text: `Velká a malá písmena – jaký je rozdíl?\n- Velké písmeno je na začátku věty nebo jména.\n- Tvoje jméno začíná velkým písmenem – jsi speciální!\n- Nakresli prst ve vzduchu: velké B, pak malé b. Vidíš rozdíl?\n- Řekni větu: Pes běží. Které písmeno je velké?\n- Zkus najít doma věc, na které je velké písmeno.\n- Velká písmena jsou jako čepice na hlavě slova!`, gameType: 'quiz', gameData: { q: 'Které slovo je napsáno správně?', opts: ['máma', 'Máma začíná velk. Správně!', 'MÁMA', 'mámA'], correct: 1, exp: 'Správně! Jméno začíná velkým písmenem.' } }
       ],
       // FÁZE 2 – Jak to funguje?
@@ -520,12 +522,12 @@ const LIBRARY = {
         { text: `Robotické cvičení! Roboti musí být v kondici!\n- Zdvihej ruce střídavě jako robotické rameno továrny.\n- Jdi po špičkách jako precizní robot – každý krok přesně!\n- Zabzuč jako počítač: bzzz, bzzz, bzzz!\n- Poskakuj a při každém skoku řekni část slova: RO-BOT!\n- Nastav obě ruce jako antény a rotuj dokola!\n- Robot je připraven na misi!`, gameType: 'quiz', gameData: { q: 'Kde roboti prozkoumávají vesmír?', opts: ['Na Slunci', 'Na Marsu', 'Na Měsíci', 'V oceánu'], correct: 1, exp: 'Správně! Robotická vozítka prozkoumávají povrch Marsu.' } }
       ],
       [
-        { text: `Co jsou roboti a co umí?\nRobot je stroj, který vykonává úkoly místo člověka!\n- Roboti v továrně vyrábí auta – šroubují 24 hodin denně.\n- Roboti chirurgové pomáhají doktorům při operacích.\n- Roboti prozkoumávají Mars – tam, kde by člověk nepřežil!\n- Pes Aibo od Sony je robotický pes, který se učí triky.\n- Roboti jsou parťáci lidí!`, gameType: 'match', gameData: { left: ['Továrna', 'Mars', 'Nemocnice', 'Domov'], right: ['Průmyslový robot', 'Rover Curiosity', 'Robotický chirurg', 'Robot Aibo'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Skvěle! Každý robot má své specifické místo a úkol.' } },
+        { text: `Co jsou roboti a co umí?\nRobot je stroj, který vykonává úkoly místo člověka!\n- Roboti v továrně vyrábí auta – šroubují 24 hodin denně.\n- Roboti chirurgové pomáhají doktorům při operacích.\n- Roboti prozkoumávají Mars – tam, kde by člověk nepřežil!\n- Pes Aibo od Sony je robotický pes, který se učí triky.\n- Roboti jsou parťáci lidí!`, gameType: 'match', gameData: { left: [{e:'🏭',t:'Továrna'},{e:'🪐',t:'Mars'},{e:'🏥',t:'Nemocnice'},{e:'🏠',t:'Domov'}], right: [{e:'🦾',t:'Průmyslový'},{e:'🔭',t:'Rover'},{e:'⚕️',t:'Chirurg'},{e:'🐕',t:'Aibo'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Skvěle! Každý robot má své specifické místo a úkol.' } },
         { text: `Jak se roboti naučí pohybovat?\nRoboti dostávají instrukce – říká se tomu programování!\n- Programátor napíše příkazy: jdi rovně 3 kroky, otoč se vlevo.\n- Robot přesně vykoná každý příkaz.\n- Zkus dát příkazy kamarádovi nebo rodiči: jdi 5 kroků, skoč 2x!\n- Pochopil si, co je programování? Je to skládání příkazů.\n- Každý programátor začínal jako ty!`, gameType: 'sort', gameData: { instruction: 'Seřaď příkazy pro robota: VSTÁT, JÍT, SEDNOUT', items: ['SEDNOUT', 'VSTÁT', 'JÍT'], correct: ['VSTÁT', 'JÍT', 'SEDNOUT'], exp: 'Správně! Robot nejdřív vstane, pak jde, pak si sedne.' } },
         { text: `Roboti a umělá inteligence!\nModerní roboti se sami učí – říká se tomu umělá inteligence!\n- Umělá inteligence je program, který z příkladů pochopí pravidla.\n- Jako ty – ukážu ti 3 kočky a ty víš, jak kočka vypadá!\n- Roboti se učí chodit pádem – jako miminko.\n- Chat roboti umí mluvit, protože přečetli miliardy slov.\n- Jednou možná ty budeš programovat roboty!`, gameType: 'quiz', gameData: { q: 'Co je umělá inteligence?', opts: ['Chytrý člověk', 'Program, který se učí', 'Robot z kovu', 'Televize'], correct: 1, exp: 'Správně! Umělá inteligence je program, který se učí z příkladů.' } }
       ],
       [
-        { text: `Jak funguje robot uvnitř?\nRobot má tři hlavní části: mozek, smysly a svaly!\n- MOZEK robota je procesor – malý čip, co počítá miliardkrát za sekundu.\n- SMYSLY jsou kamery a mikrofony – robot vidí a slyší díky nim.\n- SVALY jsou motory – otáčejí koly, klouby a rameny.\n- Baterie je jako jídlo pro robota – bez ní se zastaví.\n- Tvůj mozek je stokrát lepší než procesor!`, gameType: 'match', gameData: { left: ['Procesor', 'Kamera', 'Motor', 'Baterie'], right: ['Mozek robota', 'Oko robota', 'Sval robota', 'Jídlo robota'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Perfektně! Znáš části robota stejně jako inženýr!' } },
+        { text: `Jak funguje robot uvnitř?\nRobot má tři hlavní části: mozek, smysly a svaly!\n- MOZEK robota je procesor – malý čip, co počítá miliardkrát za sekundu.\n- SMYSLY jsou kamery a mikrofony – robot vidí a slyší díky nim.\n- SVALY jsou motory – otáčejí koly, klouby a rameny.\n- Baterie je jako jídlo pro robota – bez ní se zastaví.\n- Tvůj mozek je stokrát lepší než procesor!`, gameType: 'match', gameData: { left: [{e:'💻',t:'Procesor'},{e:'📷',t:'Kamera'},{e:'⚙️',t:'Motor'},{e:'🔋',t:'Baterie'}], right: [{e:'🧠',t:'Mozek'},{e:'👁️',t:'Oko'},{e:'💪',t:'Sval'},{e:'🍔',t:'Jídlo'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Perfektně! Znáš části robota stejně jako inženýr!' } },
         { text: `Proč roboti nevypadají jako lidé?\nVětšina robotů nevypadá jako v pohádkách!\n- Tovární robot vypadá jako velká ruka – protože jen šroubuje.\n- Robotické auto vypadá jako auto – protože jen jezdí.\n- Tvar robota závisí na tom, co má dělat!\n- Lidský tvar se jmenuje humanoid – jsou vzácné a drahé.\n- Robot Boston Dynamics Spot vypadá jako pes!`, gameType: 'quiz', gameData: { q: 'Jak se jmenuje robot s lidským tvarem?', opts: ['Androbot', 'Humanoid', 'Megatron', 'Cyborg'], correct: 1, exp: 'Správně! Robot s lidským tělem se nazývá humanoid.' } },
         { text: `Roboti v budoucnosti!\nZa 20 let bude svět plný chytrých robotů!\n- Roboti budou rozvážet balíky dronem přímo domů.\n- Robotická ruka bude operovat mozek přesněji než lidská.\n- Farmy budou obdělávat autonomní traktory bez řidiče.\n- Možná ty budeš programovat tyto roboty!\n- Svět budoucnosti potřebuje lidi jako ty!`, gameType: 'quiz', gameData: { q: 'Co jsou drony?', opts: ['Velké letadlo', 'Malé létající roboty', 'Ponorky', 'Vlaky'], correct: 1, exp: 'Správně! Drony jsou malé létající roboty bez pilota.' } }
       ],
@@ -541,11 +543,11 @@ const LIBRARY = {
     phases: [
       [
         { text: `Mise PŘÍRODA! Probudíme se jako zvířátka!\n- Skoč 5x jako žabka a při každém řekni KVAK!\n- Běž na místě jako gepard – co nejrychleji 10 sekund!\n- Roztáhni ruce jako orel a pomalu se otáčej.\n- Vydej zvuk svého oblíbeného zvířete – nahlas!\n- Stůj na jedné noze jako plameňák co nejdéle!\n- Příroda je kolem nás a dnes ji budeme zkoumat!`, gameType: 'quiz', gameData: { q: 'Které zvíře je nejrychlejší na světě?', opts: ['Lev', 'Gepard', 'Kůň', 'Orel'], correct: 1, exp: 'Správně! Gepard běhá rychlostí až 120 km/h – to je jako auto na dálnici!' } },
-        { text: `Přírodní mise startuje! Zahřátí zvířecím pohybem!\n- Plaz se po čtyřech jako medvěd – pomalu a silně.\n- Poskakuj jako veverka a při každém skoku řekni název stromu!\n- Udělej zvuky tří různých ptáků.\n- Houpej se pomalu jako strom ve větru.\n- Syč jako had: sssssss!\n- Příroda je plná pohybu!`, gameType: 'match', gameData: { left: ['Had', 'Žába', 'Sova', 'Medvěd'], right: ['Syká', 'Kváká', 'Houká', 'Brumlá'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Znáš zvuky zvířat jako pravý přírodovědec!' } },
+        { text: `Přírodní mise startuje! Zahřátí zvířecím pohybem!\n- Plaz se po čtyřech jako medvěd – pomalu a silně.\n- Poskakuj jako veverka a při každém skoku řekni název stromu!\n- Udělej zvuky tří různých ptáků.\n- Houpej se pomalu jako strom ve větru.\n- Syč jako had: sssssss!\n- Příroda je plná pohybu!`, gameType: 'match', gameData: { left: [{e:'🐍',t:'Had'},{e:'🐸',t:'Žába'},{e:'🦉',t:'Sova'},{e:'🐻',t:'Medvěd'}], right: [{e:'〰️',t:'Syká'},{e:'💧',t:'Kváká'},{e:'🌙',t:'Houká'},{e:'🍯',t:'Brumlá'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Znáš zvuky zvířat jako pravý přírodovědec!' } },
         { text: `Přírodní dobrodružství! Rozcvičíme se jako příroda!\n- Dřep dolů jak semínko, pak pomalu vyrosteš v rostlinu!\n- Roztáhni ruce a pohybuj se pomalu jako strom ve větru.\n- Udělej zvuk tří různých zvířat co nejhlasitěji!\n- Pohybuj se 20 sekund jako tvoje oblíbené zvíře!\n- Příroda tě volá na misi.`, gameType: 'quiz', gameData: { q: 'Jak se jmenuje zvíře, které mění barvu?', opts: ['Zebra', 'Chameleon', 'Tygr', 'Žirafa'], correct: 1, exp: 'Správně! Chameleon mění barvu těla – ukrývá se nebo vyjadřuje náladu.' } }
       ],
       [
-        { text: `Dnes se naučíme o zvířatech a jejich superschopnostech!\n- Netopýr vidí ve tmě pomocí odrazu zvuku – to je echolokace!\n- Chobotnice mění barvu v mžiku – ukrývá se před predátory.\n- Delfíni spí jen s půlkou mozku – druhá polovina zůstává bdělá!\n- Mravenci zvednou předmět 50x těžší, než jsou sami.\n- Jaká superschopnost by se ti líbila?`, gameType: 'match', gameData: { left: ['Netopýr', 'Delfín', 'Mravenci', 'Chobotnice'], right: ['Echolokace', 'Polospánek', 'Velká síla', 'Mění barvu'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Perfektně! Znáš superschopnosti zvířat jako biolog!' } },
+        { text: `Dnes se naučíme o zvířatech a jejich superschopnostech!\n- Netopýr vidí ve tmě pomocí odrazu zvuku – to je echolokace!\n- Chobotnice mění barvu v mžiku – ukrývá se před predátory.\n- Delfíni spí jen s půlkou mozku – druhá polovina zůstává bdělá!\n- Mravenci zvednou předmět 50x těžší, než jsou sami.\n- Jaká superschopnost by se ti líbila?`, gameType: 'match', gameData: { left: [{e:'🦇',t:'Netopýr'},{e:'🐬',t:'Delfín'},{e:'🐜',t:'Mravenci'},{e:'🐙',t:'Chobotnice'}], right: [{e:'🔊',t:'Echolokace'},{e:'😴',t:'Polospánek'},{e:'💪',t:'Velká síla'},{e:'🎨',t:'Mění barvu'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Perfektně! Znáš superschopnosti zvířat jako biolog!' } },
         { text: `Zkoumáme ekosystémy – kde žijí zvířata?\nKaždé zvíře má svůj domov, který se jmenuje biotop!\n- Les je domov pro jeleny, lišky, sovy a houby.\n- Oceán je domov pro velryby, žraloky a korály.\n- Poušť je domov pro velbloudy a kaktusy.\n- Arktida je domov pro tučňáky a lední medvědy.\n- Kde bys žil, kdybys byl zvíře?`, gameType: 'quiz', gameData: { q: 'Kde žije lední medvěd?', opts: ['Poušť', 'Les', 'Arktida', 'Oceán'], correct: 2, exp: 'Správně! Lední medvěd žije v Arktidě – v ledovém světě kolem severního pólu.' } },
         { text: `Jak rostliny a zvířata spolupracují?\nPříroda funguje jako velký tým – říká se tomu ekosystém!\n- Včely sbírají nektar a přenášejí pyl – tak vznikají plody!\n- Bez včel by nebyly jablka, třešně ani meloun!\n- Stromy poskytují kyslík a my vydechujeme vzduch pro stromy.\n- Lišky jedí myši – bez lišek by myší bylo příliš mnoho!\n- Každý tvor má svou roli. I ty jsi součástí přírody!`, gameType: 'quiz', gameData: { q: 'Co dělají včely pro rostliny?', opts: ['Jedí je', 'Přenášejí pyl', 'Zalévají je', 'Nic'], correct: 1, exp: 'Správně! Včely přenášejí pyl – bez nich by nebylo ovoce!' } }
       ],
@@ -562,6 +564,64 @@ const LIBRARY = {
     ]
   },
 
+  transport: {
+    phases: [
+      // FÁZE 0 – Pohybový start
+      [
+        { text: `Mise DOPRAVA startuje! Pohybujeme se jako dopravní prostředky!\n- Jdi po pokoji jako auto: Vrrrr! Vrrrr! Zatáčej do zatáček!\n- Zastav na červenou! Stůj klidně. Zelená – jeď dál!\n- Udělej 5 dřepů – tankuješ benzín!\n- Natáhni ruce jako křídla letadla a pomalu se otáčej.\n- Zapípej jako vlak: Tůůůů! Tůůůů!\n- Dopravní prostředky nás vezou všude!`, gameType: 'quiz', gameData: { q: 'Jakou barvou svítí semafor pro zastavení?', opts: ['Zelená', 'Oranžová', 'Červená', 'Modrá'], correct: 2, exp: 'Správně! Červená znamená STŮJ. Zelená znamená JEĎ!' } },
+        { text: `Dopravní mise! Probudíme se pohybem!\n- Řiď vymyšlené auto – točíš volantem, mačkáš pedály!\n- Teď jsi pilot! Natáhni ruce a naklání se jako letadlo.\n- Jsi kapitán lodi: houpej se ze strany na stranu!\n- Udělej 3 dřepy jako výstupy a nástupy do autobusu.\n- Zaparkuj auto – přijdi přesně na místo a zastav!\n- Výborně, šéfřidiči!`, gameType: 'fillblank', gameData: { sentence: 'Letadlo startuje a přistává na', blank: 'letišti', opts: ['letišti', 'nádraží', 'přístavu', 'silnici'], exp: 'Správně! Letadla startují a přistávají na letišti.' } },
+        { text: `Jdeme na dopravní dobrodružství!\n- Jeď jako motorka: Brmmm Brmmm – nakloň se do zatáček!\n- Teď jsi vlak: kráčej rovně a vydej zvuk Tůůů!\n- Jsi závodní auto: sprint ke zdi a zpět co nejrychleji!\n- Přistání letadla: pomalu snižuj rychlost a zastav.\n- Otáčej kormidlem lodi a vyhýbej se vlnám.\n- Start, mise začíná!`, gameType: 'quiz', gameData: { q: 'Jak se jmenuje místo, kde zastavuje vlak?', opts: ['Letiště', 'Přístav', 'Nádraží', 'Garáž'], correct: 2, exp: 'Správně! Vlak zastavuje na nádraží. Lodě kotví v přístavu!' } }
+      ],
+      // FÁZE 1 – Hlavní quest
+      [
+        { text: `Typy dopravních prostředků!\nDopravní prostředky jsou všude – na zemi, ve vzduchu i ve vodě!\n- PO ZEMI: auto, autobus, vlak, motorka, kolo, tramvaj\n- VE VZDUCHU: letadlo, vrtulník, horkovzdušný balón\n- PO VODĚ: loď, člun, ponorka, trajekt\n- Jaký dopravní prostředek máš nejradši?\n- Nejrychlejší je letadlo – může letět 900 km za hodinu!`, gameType: 'match', gameData: { left: [{e:'🚗',t:'Auto'},{e:'✈️',t:'Letadlo'},{e:'🚢',t:'Loď'},{e:'🚂',t:'Vlak'}], right: [{e:'🛣️',t:'Silnice'},{e:'☁️',t:'Vzduch'},{e:'🌊',t:'Voda'},{e:'🛤️',t:'Koleje'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Každý dopravní prostředek má své prostředí!' } },
+        { text: `Rychlost dopravních prostředků!\nJak rychle se dopravní prostředky pohybují?\n- Kolo: 15–20 km/h – šlapáš nohama!\n- Auto: až 130 km/h na dálnici.\n- Vlak: až 320 km/h – superrychlý TGV!\n- Letadlo: 900 km/h – skoro rychlost zvuku!\n- Kosmická raketa: 28 000 km/h – neuvěřitelné!\n- Čím rychleji jedeš, tím silnější motor potřebuješ!`, gameType: 'compare', gameData: { pairs: [[15,900],[320,50],[130,320],[20,15],[9,28]], exp: 'Výborně! Umíš porovnat rychlosti vozidel!' } },
+        { text: `Kdo řídí a kdo jede?\nKaždý dopravní prostředek má svého řidiče!\n- Auto řídí ŘIDIČ – potřebuje řidičský průkaz.\n- Letadlo řídí PILOT – ovládá spoustu přístrojů!\n- Vlak řídí STROJVEDOUCÍ – jede po kolejích.\n- Loď řídí KAPITÁN – rozhoduje o celé cestě.\n- Bez zkušeného řidiče by nás vozidlo nikam nedovezlo!`, gameType: 'match', gameData: { left: [{e:'✈️',t:'Letadlo'},{e:'🚂',t:'Vlak'},{e:'🚢',t:'Loď'},{e:'🚌',t:'Autobus'}], right: [{e:'🧑‍✈️',t:'Pilot'},{e:'🚆',t:'Strojvedoucí'},{e:'⚓',t:'Kapitán'},{e:'🪪',t:'Řidič'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Skvěle! Každé vozidlo má svého odborníka na řízení!' } }
+      ],
+      // FÁZE 2 – Jak to funguje?
+      [
+        { text: `Jak funguje auto?\nAuto je složitý stroj, ale jeho princip je jednoduchý!\n- Motor spaluje benzín nebo naftu a vytváří energii.\n- Energie otáčí koly – a auto se pohybuje!\n- Volant řídí přední kola – doleva, doprava.\n- Brzdy zastavují kola třením – zastavíme!\n- Elektrická auta mají místo motoru velkou baterii.\n- Budoucnost patří elektrickým autům!`, gameType: 'sort', gameData: { instruction: 'Seřaď: jak auto jede (od startu)', items: ['Kola se točí', 'Motor startuje', 'Auto jede', 'Zmáčkneš plyn'], correct: ['Motor startuje', 'Zmáčkneš plyn', 'Kola se točí', 'Auto jede'], exp: 'Skvěle! Motor → plyn → kola → auto jede!' } },
+        { text: `Jak letadlo létá?\nLetadlo je těžší než vzduch – jak tedy letí?\n- Křídla mají speciální tvar: nahoře zaoblená, dole rovná.\n- Vzduch nad křídlem jde rychleji – a tlačí křídlo NAHORU!\n- Tomuto jevu se říká vztlak – ten letadlo zvedá!\n- Motory (turbíny) letadlo žene DOPŘEDU.\n- Orville Wright letěl poprvé v roce 1903 – jen 12 sekund!\n- Dnes letadla přepraví miliony lidí každý den.`, gameType: 'quiz', gameData: { q: 'Jaká síla drží letadlo ve vzduchu?', opts: ['Gravitace', 'Vztlak', 'Vítr', 'Motor sám'], correct: 1, exp: 'Správně! Vztlak vzniká tvarem křídel a drží letadlo ve vzduchu.' } },
+        { text: `Jak funguje vlak a koleje?\nVlak je jeden z nejúčinnějších dopravních prostředků!\n- Vlak jede po dvou kolejích z oceli – kola jsou přesně nastavená.\n- Ocelová kola na ocelových kolejích mají skoro žádné tření!\n- Méně tření = méně energie = vlak je úsporný!\n- Moderní maglev vlaky visí nad kolejemi na magnetu!\n- Maglev v Japonsku jede přes 600 km/h!\n- Vlak vozí 500 lidí najednou – šetří silnice a vzduch!`, gameType: 'quiz', gameData: { q: 'Jak funguje nejrychlejší vlak maglev?', opts: ['Má obří motor', 'Visí na magnetu', 'Létá ve vzduchu', 'Má 10 kol'], correct: 1, exp: 'Správně! Maglev visí na magnetickém polštáři – žádné tření, ohromná rychlost!' } }
+      ],
+      // FÁZE 3 – Závěr
+      [
+        { text: `Mise DOPRAVA splněna! Výborná práce, {name}!\nOffline mise s rodinou:\n- Nakresli svůj vysněný dopravní prostředek budoucnosti!\n- Spočítej, kolik různých dopravních prostředků vidíte z okna.\n- Zahrajte si: jeden dělá zvuky vozidla, druhý hádá co je!\n- Zítra čeká nová mise!`, gameType: null },
+        { text: `Dopravní mise: DOKONČENA!\nDomácí výzva:\n- Při příštím výletu spočítejte různé druhy aut.\n- Zahrajte si na řidiče: jeden dává pokyny, druhý jede jako auto.\n- Nakresli mapu vaší ulice s auty a semaforem!\n- Kapitán Kód říká: skvělý řidič!`, gameType: null },
+        { text: `Výborná dopravní mise!\nVečerní výzva:\n- Řekni rodičům, jak letadlo létá (vztlak!).\n- Najděte obrázky 5 různých dopravních prostředků v knize nebo na internetu.\n- Vymysli nový dopravní prostředek – jak by se jmenoval?\n- Spi dobře, zítra jedeme na novou misi!`, gameType: null }
+      ]
+    ]
+  },
+
+  sport: {
+    phases: [
+      // FÁZE 0 – Pohybový start
+      [
+        { text: `Mise SPORTY startuje! Vyzkoušíme různé sporty pohybem!\n- Udělej 5 dřepů jako vzpěrač s těžkými činkami!\n- Plavecké pohyby rukama – kraul, prsa!\n- Tenisový úder – švihem ruky odpaluj vymyšlený míček!\n- Skoč do výšky jako basketbalista a hoď míč do koše!\n- Lyžuj po pokoji – vyklouzni nohama a naklání se!\n- Sport je skvělý pro tělo i mozek!`, gameType: 'quiz', gameData: { q: 'Který sport se hraje ve vodě?', opts: ['Tenis', 'Plavání', 'Lyžování', 'Atletika'], correct: 1, exp: 'Správně! Plavání je sport ve vodě – posiluje celé tělo!' } },
+        { text: `Sportovní rozcvička! Každý sport má svůj pohyb!\n- Boxuj do vzduchu 10 sekund – levá, pravá, levá!\n- Skácej přes vymyšlenou švihadlovou šňůru!\n- Udělej fotbalovou oslavu – ruce přes hlavu!\n- Cykli nohama ve vzduchu – jako na kole!\n- Hoď vymyšleným oštěpem co nejdál!\n- Jsi sportovní šampión!`, gameType: 'fillblank', gameData: { sentence: 'Hráč, který hází míč do koše, hraje', blank: 'basketbal', opts: ['basketbal', 'fotbal', 'tenis', 'hokej'], exp: 'Správně! V basketbalu se hází míč do koše!' } },
+        { text: `Sportovní olympijský start!\n- Udělej start sprintera: dřep, ruce na podlahu, pak vyskočíš!\n- Skoč co nejdál dopředu – skok daleký!\n- Šermuj vymyšleným mečem – touché!\n- Zahraj si tenis – přes vymyšlenou síť!\n- Udělej oslavu jako po olympijském zlatě!\n- Jsi olympijský atlet!`, gameType: 'quiz', gameData: { q: 'Jak se jmenuje největší sportovní událost světa?', opts: ['Mistrovství světa', 'Olympijské hry', 'Světový pohár', 'Superliga'], correct: 1, exp: 'Správně! Olympijské hry jsou největší sportovní událost – konají se každé 4 roky!' } }
+      ],
+      // FÁZE 1 – Hlavní quest
+      [
+        { text: `Sporty a jejich vybavení!\nKaždý sport má speciální vybavení!\n- FOTBAL: kulatý míč, kopačky, branky\n- TENIS: raketa, žlutý míček, síť\n- PLAVÁNÍ: plavky, brýle, čepice\n- HOKEJ: hokejka, puk, brusle, helma\n- LYŽOVÁNÍ: lyže, hůlky, sjezdovka\n- Správné vybavení pomáhá a chrání sportovce!`, gameType: 'match', gameData: { left: [{e:'🏒',t:'Hokej'},{e:'🎾',t:'Tenis'},{e:'🏊',t:'Plavání'},{e:'⛷️',t:'Lyžování'}], right: [{e:'🛹',t:'Brusle a puk'},{e:'🎾',t:'Raketa'},{e:'🥽',t:'Plavecké brýle'},{e:'🎿',t:'Lyže a hůlky'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Skvěle! Znáš sportovní vybavení jako pravý šampión!' } },
+        { text: `Létní a zimní sporty!\nSporty se dělí podle počasí a prostředí!\n- LETNÍ: plavání, atletika, tenis, fotbal, cyklistika\n- ZIMNÍ: lyžování, snowboard, hokej, krasobruslení\n- Olympijské hry mají letní i zimní verzi!\n- Na letní olympiádě je přes 300 disciplín!\n- Na zimní olympiádě závodníci na sněhu a ledu.\n- Jaký sport bys chtěl vyzkoušet?`, gameType: 'sort', gameData: { instruction: 'Seřaď sporty: nejdřív letní, pak zimní', items: ['Hokej', 'Plavání', 'Lyžování', 'Tenis'], correct: ['Plavání', 'Tenis', 'Hokej', 'Lyžování'], exp: 'Výborně! Plavání a tenis jsou letní, hokej a lyžování jsou zimní.' } },
+        { text: `Olympijské hry – největší sport světa!\nOlympiáda je slavnost sportu a přátelství!\n- První olympijské hry byly ve starém Řecku v roce 776 před Kristem!\n- Moderní olympiáda začala roku 1896 v Athénách.\n- Závodníci získávají zlatou, stříbrnou nebo bronzovou medaili.\n- Olympijský oheň putuje z Řecka do pořadatelského města.\n- Heslo olympiády: RYCHLEJI, VÝŠE, SILNĚJI!\n- Každé 4 roky se celý svět dívá na olympiádu!`, gameType: 'quiz', gameData: { q: 'Jakou barvu má medaile za první místo na olympiádě?', opts: ['Stříbrnou', 'Bronzovou', 'Zlatou', 'Platinovou'], correct: 2, exp: 'Správně! Zlatá medaile je pro prvního, stříbrná pro druhého, bronzová pro třetího!' } }
+      ],
+      // FÁZE 2 – Jak to funguje?
+      [
+        { text: `Proč sport posiluje tělo?\nSport mění tělo a mozek – věda to potvrdila!\n- Při běhu svaly potřebují více kyslíku – srdce tluče rychleji.\n- Silnější srdce = více krve = více energie pro celé tělo.\n- Svaly rostou, když je zatížíš a pak odpočineš.\n- Sport uvolňuje endorfiny – látky, díky kterým se cítíš šťastný!\n- Po sportu se lépe spí a lépe se učí!\n- Sport je nejlepší lék – a přitom tak zábavný!`, gameType: 'quiz', gameData: { q: 'Co se uvolňuje v mozku při sportu a dělá nás šťastnými?', opts: ['Vitamíny', 'Endorfiny', 'Cukr', 'Vzduch'], correct: 1, exp: 'Správně! Endorfiny jsou látky v mozku, díky nimž se cítíme šťastně po sportu!' } },
+        { text: `Jak fungují svaly?\nSvaly jsou úžasné stroje z bílkovin!\n- Sval se skládá z tisíců vláken – jako provaz z vláken.\n- Mozek pošle signál → sval se stáhne!\n- Při kontrakci se vlákna zkrátí a kloub se ohne.\n- Po tréninku sval potřebuje čas na opravu – to je regenerace.\n- Bílkoviny (maso, vejce, luštěniny) pomáhají svalům růst.\n- Spánek je nejdůležitější část tréninku!`, gameType: 'sort', gameData: { instruction: 'Seřaď: jak sval pracuje', items: ['Pohyb nastane', 'Signál z mozku', 'Sval se stáhne', 'Odpočinek'], correct: ['Signál z mozku', 'Sval se stáhne', 'Pohyb nastane', 'Odpočinek'], exp: 'Výborně! Mozek → sval → pohyb → odpočinek!' } },
+        { text: `Proč sportovci jedí zdravě?\nVýživa je palivo pro sportovce!\n- SACHARIDY (chléb, těstoviny, rýže) = energie na výkon.\n- BÍLKOVINY (maso, vejce) = stavba a obnova svalů.\n- VODA = nejdůležitější! Svaly jsou ze 75 % voda.\n- Bez dostatku vody svaly křečují a mozek nesoustředí.\n- Ovoce a zelenina dávají vitamíny pro rychlou regeneraci.\n- Pij vodu před, během i po sportu!`, gameType: 'quiz', gameData: { q: 'Co je nejdůležitější nápoj pro sportovce?', opts: ['Džus', 'Coca-Cola', 'Voda', 'Energetický nápoj'], correct: 2, exp: 'Správně! Voda je nejdůležitější – svaly jsou ze 75 % tvořeny vodou!' } }
+      ],
+      // FÁZE 3 – Závěr
+      [
+        { text: `Mise SPORTY splněna! Byl si výborný sportovec, {name}!\nOffline mise s rodinou:\n- Zahrajte si doma oblíbený sport nebo vymyslete vlastní!\n- Nakresli sebe jako olympijského šampióna s medailí.\n- Řekni rodičům: co jsou endorfiny?\n- Odpočiň si – svaly rostou při odpočinku!`, gameType: null },
+        { text: `Sportovní mise: DOKONČENA!\nDomácí výzva:\n- Zkuste spolu 5 minut pohybu – co vás baví nejvíc?\n- Udělej svůj vlastní olympijský oheň z papíru!\n- Vymysli vlastní sport a pravidla.\n- Kapitán Kód říká: pohyb je život!`, gameType: null },
+        { text: `Výborný sportovní výkon!\nVečerní výzva:\n- Pojmenuj 5 různých sportů, které znáš.\n- Jaký sport bys chtěl vyzkoušet? Řekni rodičům!\n- Před spaním udělej 10 dřepů – dobrá práce.\n- Zítra čeká nová mise, šampióne!`, gameType: null }
+      ]
+    ]
+  },
+
   football: {
     phases: [
       [
@@ -570,7 +630,7 @@ const LIBRARY = {
         { text: `Fotbalové zahřátí! Hvězdy trénují každý den!\n- Stůj na jedné noze 10 sekund jako brankář čekající na penaltu.\n- Udělej slalom mezi vymyšlenými kužely.\n- Zkopni 3 penalty do vymyšlené brány.\n- Povzbuzuj svůj tým: nahlas křič název svého oblíbeného klubu!\n- Trenér Kapitán Kód říká: výborný trénink!`, gameType: 'quiz', gameData: { q: 'Co je penalty?', opts: ['Žlutá karta', 'Kop z 11 metrů za faul', 'Rozkop brankáře', 'Rohový kop'], correct: 1, exp: 'Správně! Penalty se kope z 11 metrů, když hráč udělá faul v pokutovém území.' } }
       ],
       [
-        { text: `Jak funguje fotbalový tým?\nFotbal je týmový sport – sám nemůžeš vyhrát!\n- Tým má 11 hráčů v poli a 1 brankáře.\n- Každý hráč má svoji roli: útočník střílí góly, obránce brání.\n- Záložník propojuje útok a obranu – je jako mozek týmu.\n- Trenér říká, jak hrát – ale hráči musí rozhodovat na hřišti.\n- Bez spolupráce ani nejlepší hvězda neskóruje!`, gameType: 'match', gameData: { left: ['Brankář', 'Útočník', 'Obránce', 'Záložník'], right: ['Chytá míče', 'Střílí góly', 'Brání před útočníky', 'Propojuje útok a obranu'], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Znáš role fotbalistů jako opravdový trenér!' } },
+        { text: `Jak funguje fotbalový tým?\nFotbal je týmový sport – sám nemůžeš vyhrát!\n- Tým má 11 hráčů v poli a 1 brankáře.\n- Každý hráč má svoji roli: útočník střílí góly, obránce brání.\n- Záložník propojuje útok a obranu – je jako mozek týmu.\n- Trenér říká, jak hrát – ale hráči musí rozhodovat na hřišti.\n- Bez spolupráce ani nejlepší hvězda neskóruje!`, gameType: 'match', gameData: { left: [{e:'🧤',t:'Brankář'},{e:'⚽',t:'Útočník'},{e:'🛡️',t:'Obránce'},{e:'🎯',t:'Záložník'}], right: [{e:'🤲',t:'Chytá míče'},{e:'🥅',t:'Střílí góly'},{e:'🚧',t:'Brání'},{e:'🔗',t:'Propojuje'}], pairs: [[0,0],[1,1],[2,2],[3,3]], exp: 'Výborně! Znáš role fotbalistů jako opravdový trenér!' } },
         { text: `Pravidla fotbalu!\nFotbal má jednoduchá, ale důležitá pravidla!\n- Hráč nesmí hrát rukama (kromě brankáře ve vlastní bráně).\n- Ofsajd: útočník nesmí být před posledním obráncem.\n- Žlutá karta = varování. Dvě žluté = červená = ven!\n- Penalty se kopou z 11 metrů za faul v pokutovém území.\n- Zápas trvá 90 minut – dvakrát 45 minut.\n- Teď víš pravidla jako rozhodčí!`, gameType: 'quiz', gameData: { q: 'Co dostane hráč za hrubý faul?', opts: ['Zlatou kartu', 'Žlutou nebo červenou kartu', 'Medaili', 'Nic'], correct: 1, exp: 'Správně! Žlutá karta je varování, červená je vyloučení ze hřiště.' } },
         { text: `Největší fotbalisté historie!\nFotbal má opravdové superhrdiny!\n- Pelé z Brazílie dal za kariéru přes 1000 gólů – legenda!\n- Ronaldo a Messi jsou největší rivalové dnešní doby.\n- Maradona dal Gól století – sám přešel celé hřiště!\n- Ženy hrají fotbal stejně skvěle – Marta je legenda ženského fotbalu.\n- Slavná čísla: 7 nosí Ronaldo, 10 byl Messi a Pelé.\n- Kdo je tvůj oblíbený fotbalista?`, gameType: 'quiz', gameData: { q: 'Jaké číslo dresy proslavil Cristiano Ronaldo?', opts: ['3', '7', '10', '11'], correct: 1, exp: 'Správně! Číslo 7 je Ronaldův slavný dres – nosil ho v Manchesteru i v Realu!' } }
       ],
@@ -599,7 +659,9 @@ const TOPICS = [
   {id:'numbers', emoji:'🔢', name:'ČÍSLA', desc:'Počítání a matematika'},
   {id:'robots', emoji:'🤖', name:'ROBOTI', desc:'Stroje budoucnosti'},
   {id:'nature', emoji:'🌿', name:'PŘÍRODA', desc:'Zvířata a rostliny'},
-  {id:'football', emoji:'⚽', name:'FOTBAL', desc:'Sport a týmová hra'}
+  {id:'football', emoji:'⚽', name:'FOTBAL', desc:'Sport a týmová hra'},
+  {id:'transport', emoji:'🚗', name:'DOPRAVA', desc:'Auta, vlaky, letadla'},
+  {id:'sport', emoji:'🏅', name:'SPORTY', desc:'Různé sporty světa'}
 ];
 
 const PHASES = [
@@ -1016,12 +1078,22 @@ function renderMatch(area, data) {
     <div class="game-feedback" id="matchFb">Klikni vlevo, pak vpravo</div>
     <div class="game-result" id="matchResult"><div class="game-result-title">VÝBORNĚ!</div><div class="game-result-text">${data.exp}</div></div>`;
   area.appendChild(wrap);
+
+  const makeBtn=(val,cls)=>{
+    const b=document.createElement('button'); b.className='match-item '+cls;
+    if(val&&typeof val==='object'&&val.e){
+      b.innerHTML=`<span class="me">${val.e}</span>${val.t?`<span class="ml">${val.t}</span>`:''}`;
+    } else { b.textContent=val; }
+    return b;
+  };
+
   let selLeft=null; let matched=0;
   const leftEl=document.getElementById('matchLeft');
   const rightEl=document.getElementById('matchRight');
-  const shuffledRight=[...data.right].sort(()=>Math.random()-.5);
-  data.left.forEach((txt,i)=>{
-    const b=document.createElement('button'); b.className='match-item left'; b.textContent=txt; b.dataset.idx=i;
+  const indexedRight=data.right.map((v,i)=>({v,i})).sort(()=>Math.random()-.5);
+
+  data.left.forEach((val,i)=>{
+    const b=makeBtn(val,'left'); b.dataset.idx=i;
     b.onclick=()=>{
       if(b.classList.contains('matched-ok')) return;
       document.querySelectorAll('.match-item.left').forEach(x=>x.classList.remove('selected'));
@@ -1029,9 +1101,9 @@ function renderMatch(area, data) {
     };
     leftEl.appendChild(b);
   });
-  shuffledRight.forEach((txt,i)=>{
-    const origIdx=data.right.indexOf(txt);
-    const b=document.createElement('button'); b.className='match-item right'; b.textContent=txt; b.dataset.orig=origIdx;
+
+  indexedRight.forEach(({v,i:origIdx})=>{
+    const b=makeBtn(v,'right'); b.dataset.orig=origIdx;
     b.onclick=()=>{
       if(!selLeft||b.classList.contains('matched-ok')) return;
       const leftIdx=parseInt(selLeft.dataset.idx);
